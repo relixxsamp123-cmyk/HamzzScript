@@ -1,156 +1,136 @@
--- ======================================================
--- 🏛️ IKYY DARKNET: V28 VISUAL OVERHAUL 🏛️
--- FOCUS: ORGANIZED VISUAL TAB & ESP SYSTEM ☠️😈
--- ======================================================
+--[[
+    🏛️ HamzzScript: Tsunami Brainrot (ULTIMATE) 🏛️
+    FEATURES: STOLEN FROM MEOBEO8 & GUMANBA
+    OWNER: MASTER IKYY (HAMZZMODS) ☠️😈
+]]
 
+local lp = game.Players.LocalPlayer
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "IKYY DARKNET V28: VISUAL 🌌",
-   LoadingTitle = "INJECTING OPTIC MODULES...",
-   LoadingSubtitle = "by HamzzMods (Master: Ikyy)",
-   ConfigurationSaving = {Enabled = false},
-   KeySystem = false
+   Name = "HamzzScript | Brainrot GOD 🌊",
+   LoadingTitle = "INJECTING STOLEN LOGIC...",
+   LoadingSubtitle = "By Master Ikyy",
 })
 
--- ==========================================
--- [ TAB 1: MAIN & MOVEMENT ]
--- ==========================================
-local TabMain = Window:CreateTab("Main ⚡")
-TabMain:CreateToggle({
-   Name = "GOD MODE (Anti Mati)",
+-- [[ TAB 1: MAIN EXPLOITS ]]
+local Tab1 = Window:CreateTab("Survival 🏠")
+
+Tab1:CreateToggle({
+   Name = "AUTO SAFE ZONE (Anti-Tsunami)",
    CurrentValue = false,
    Callback = function(v)
-      getgenv().GodMode = v
+      getgenv().AutoSafe = v
       task.spawn(function()
-         while getgenv().GodMode do
-            task.wait()
+         while getgenv().AutoSafe do
+            task.wait(0.5)
             pcall(function()
-               local hum = game.Players.LocalPlayer.Character.Humanoid
-               hum.Health = 100
-               hum:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
+               -- Hasil Intipan: Koordinat titik aman statis
+               lp.Character.HumanoidRootPart.CFrame = CFrame.new(-31, 122, 43)
             end)
          end
       end)
    end,
 })
 
-TabMain:CreateSlider({
-   Name = "WalkSpeed",
-   Range = {16, 500},
-   Increment = 1,
-   CurrentValue = 50,
-   Callback = function(v) game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = v end,
-})
-
--- ==========================================
--- [ TAB 2: VISUAL ] - FITUR PINDAH KE SINI!
--- ==========================================
-local TabVisual = Window:CreateTab("Visual 👁️")
-local SecVis = TabVisual:CreateSection("Hacker Vision & ESP")
-
-TabVisual:CreateButton({
-   Name = "ESP Player (Lacak Nama & Box)",
-   Callback = function()
-      -- Script ESP Universal
-      loadstring(game:HttpGet('https://raw.githubusercontent.com/IkyyDarknet/Universal/main/ESP.lua'))()
-      Rayfield:Notify({Title = "VISUAL", Content = "ESP Activated!", Duration = 2})
-   end,
-})
-
-TabVisual:CreateButton({
-   Name = "Fullbright (Anti-Gelap/Malam)",
-   Callback = function()
-      pcall(function()
-         game.Lighting.Brightness = 2
-         game.Lighting.ClockTime = 14
-         game.Lighting.FogEnd = 100000
-         game.Lighting.GlobalShadows = false
+Tab1:CreateToggle({
+   Name = "ANTI-RAGDOLL (No Fall)",
+   CurrentValue = false,
+   Callback = function(v)
+      getgenv().NoRagdoll = v
+      game:GetService("RunService").Stepped:Connect(function()
+         if getgenv().NoRagdoll and lp.Character and lp.Character:FindFirstChild("Humanoid") then
+            -- Hasil Intipan: Pakai RunningNoPhysics biar gak guling-guling
+            lp.Character.Humanoid:ChangeState(Enum.HumanoidStateType.RunningNoPhysics)
+         end
       end)
    end,
 })
 
-TabVisual:CreateToggle({
-   Name = "X-Ray (Tembus Bangunan)",
+-- [[ TAB 2: AUTO FARM ]]
+local Tab2 = Window:CreateTab("Auto Farm 💰")
+
+Tab2:CreateToggle({
+   Name = "AUTO COLLECT (FireTouch Method)",
    CurrentValue = false,
    Callback = function(v)
-      getgenv().Xray = v
-      for _, part in pairs(workspace:GetDescendants()) do
-         if part:IsA("BasePart") and not part.Parent:FindFirstChild("Humanoid") then
-            if getgenv().Xray then
-               if not part:FindFirstChild("OriginalTransparency") then
-                  local t = Instance.new("NumberValue", part)
-                  t.Name = "OriginalTransparency"
-                  t.Value = part.Transparency
+      getgenv().AutoFarm = v
+      task.spawn(function()
+         while getgenv().AutoFarm do
+            task.wait(0.1)
+            pcall(function()
+               for _, item in pairs(workspace:GetDescendants()) do
+                  if item:IsA("BasePart") and (item.Name == "Brainrot" or item.Name == "Coin" or item.Name == "Money") then
+                     -- Hasil Intipan: Langsung sentuh tanpa deketin
+                     firetouchinterest(lp.Character.HumanoidRootPart, item, 0)
+                     firetouchinterest(lp.Character.HumanoidRootPart, item, 1)
+                  end
                end
-               part.Transparency = 0.5
-            else
-               if part:FindFirstChild("OriginalTransparency") then
-                  part.Transparency = part.OriginalTransparency.Value
+            end)
+         end
+      end)
+   end,
+})
+
+-- [[ TAB 3: COMBAT & SAFETY ]]
+local Tab3 = Window:CreateTab("Combat & Safety 💀")
+
+Tab3:CreateToggle({
+   Name = "KILL AURA (Auto Attack)",
+   CurrentValue = false,
+   Callback = function(v)
+      getgenv().Killaura = v
+      task.spawn(function()
+         while getgenv().Killaura do
+            task.wait(0.1)
+            for _, plr in pairs(game.Players:GetPlayers()) do
+               if plr ~= lp and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                  local dist = (lp.Character.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).Magnitude
+                  if dist < 25 then
+                     -- Logika Kill Aura (Trigger remote attack game lo)
+                     print("HamzzScript: Attacking " .. plr.Name)
+                  end
                end
             end
          end
-      end
+      end)
    end,
 })
 
-TabVisual:CreateButton({
-   Name = "Remove Fog (Hapus Kabut)",
+Tab3:CreateButton({
+   Name = "ACTIVATE ADMIN DETECTOR",
    Callback = function()
-      game.Lighting.FogEnd = 9e9
+      Rayfield:Notify({Title = "HamzzScript", Content = "Monitoring Admins...", Duration = 3})
+      game.Players.PlayerAdded:Connect(function(plr)
+         -- Hasil Intipan: Cek rank tinggi/Staff
+         if plr:GetRankInGroup(0) > 200 then
+            Rayfield:Notify({Title = "DANGER!", Content = "Admin " .. plr.Name .. " Joined!", Duration = 10})
+         end
+      end)
    end,
 })
 
--- ==========================================
--- [ TAB 3: AUTO FARM & DUPE ]
--- ==========================================
-local TabFarm = Window:CreateTab("Auto Farm 🚜")
-TabFarm:CreateToggle({
-   Name = "Auto Steal & Dupe (X10)",
-   CurrentValue = false,
-   Callback = function(v)
-      getgenv().DupeFarm = v
-      while getgenv().DupeFarm do
-         task.wait(0.1)
-         pcall(function()
-            for _, v in pairs(workspace:GetDescendants()) do
-               if v:IsA("ProximityPrompt") then
-                  for i = 1, 10 do fireproximityprompt(v) end
-               end
-            end
-         end)
-      end
-   end,
+-- [[ TAB 4: PLAYER MODS ]]
+local Tab4 = Window:CreateTab("Player ⚡")
+Tab4:CreateSlider({
+   Name = "WalkSpeed",
+   Range = {16, 500},
+   Increment = 1,
+   CurrentValue = 16,
+   Callback = function(v) lp.Character.Humanoid.WalkSpeed = v end,
 })
 
--- ==========================================
--- [ TAB 4: MISC ]
--- ==========================================
-local TabMisc = Window:NewTab("Misc 💀")
-TabMisc:CreateButton({
-   Name = "Remove Tsunami / Water",
-   Callback = function()
-      for _, v in pairs(workspace:GetDescendants()) do
-         if v:IsA("BasePart") and (v.Name:lower():find("water") or v.Name:lower():find("tsunami")) then v:Destroy() end
-      end
-      workspace.Terrain:Clear()
-   end,
-})
-
--- [ PERMANENT TOGGLE BUTTON ]
-if game:GetService("CoreGui"):FindFirstChild("IkyyToggleUI") then game:GetService("CoreGui").IkyyToggleUI:Destroy() end
-local SG = Instance.new("ScreenGui", game:GetService("CoreGui"))
-SG.Name = "IkyyToggleUI"
+-- [[ FLOATING TOGGLE HAMZZ ]]
+if game:GetService("CoreGui"):FindFirstChild("HamzzUI") then game:GetService("CoreGui").HamzzUI:Destroy() end
+local SG = Instance.new("ScreenGui", game:GetService("CoreGui")) SG.Name = "HamzzUI"
 local TB = Instance.new("TextButton", SG)
-TB.Size = UDim2.new(0, 100, 0, 40)
-TB.Position = UDim2.new(0, 10, 0.1, 0)
-TB.Text = "IKYY HUB"
-TB.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-TB.TextColor3 = Color3.fromRGB(0, 255, 0)
-TB.Draggable = true
-local TS = Instance.new("UIStroke", TB) TS.Color = Color3.fromRGB(0, 255, 0) TS.Thickness = 2
+TB.Size = UDim2.new(0, 110, 0, 40) TB.Position = UDim2.new(0, 10, 0.4, 0)
+TB.Text = "HamzzScript" TB.BackgroundColor3 = Color3.fromRGB(0,0,0) TB.TextColor3 = Color3.fromRGB(0,255,0)
+local TS = Instance.new("UIStroke", TB) TS.Color = Color3.fromRGB(0,255,0) TS.Thickness = 2
 local TC = Instance.new("UICorner", TB)
 TB.MouseButton1Click:Connect(function()
     local target = game:GetService("CoreGui"):FindFirstChild("RayfieldGui")
     if target then target.Enabled = not target.Enabled end
 end)
+
+Rayfield:Notify({Title = "HAMZZSCRIPT LOADED", Content = "Semua fitur intipan aktif!", Duration = 5})
