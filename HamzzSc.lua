@@ -1,64 +1,48 @@
--- [[ LOAD ORION LIBRARY ]]
-local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+-- [[ HamzzScript - Mode Iblis ]] --
+local lp = game.Players.LocalPlayer
+local char = lp.Character or lp.CharacterAdded:Wait()
 
--- [[ KEY KONFIGURASI ]]
-local ValidKey = "Acbw329hdvbamwh2991" -- KEY ACAK LO, JEMBOT!
+-- GOD MODE: MATIIN CONNECTION DAMAGE 😈
+-- Kita putus jalur komunikasi server yang bilang lo "Sakit"
+local function GodMode()
+    local humanoid = char:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        humanoid:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
+        humanoid.MaxHealth = 1e5
+        humanoid.Health = 1e5
+        
+        -- Hapus skrip yang ngatur damage kalau ada
+        for _, v in pairs(char:GetDescendants()) do
+            if v:IsA("Script") and (v.Name:lower():find("damage") or v.Name:lower():find("health")) then
+                v.Disabled = true
+            end
+        end
+    end
+end
 
-local Window = OrionLib:MakeWindow({
-    Name = "HamzzScript | MASTER IKYY 💀", 
-    HidePremium = false, 
-    SaveConfig = true, 
-    ConfigFolder = "HamzzKeySystem",
-    IntroText = "WELCOME MASTER IKYY",
-    KeySystem = true, -- AKTIFIN SISTEM KUNCI!
-    KeySettings = {
-        Title = "HamzzScript | SECURITY",
-        Subtitle = "Ketik Key-nya, Bangsat!",
-        Note = "Key: Acbw329hdvbamwh2991", -- Hapus baris ini kalo lo mau rahasia!
-        FileName = "HamzzKeySave", 
-        SaveKey = true, 
-        GrabKeyFromSite = false,
-        Key = {ValidKey} -- Validasi key acak lo di sini
-    }
-})
-
--- [[ KALO KEY BENER, TAB DI BAWAH INI BARU MUNCUL ]]
-local TabMain = Window:MakeTab({
-	Name = "Main Farm ⚡",
-	Icon = "rbxassetid://4483345998",
-	PremiumOnly = false
-})
-
-TabMain:AddToggle({
-	Name = "AUTO-ROB (READY TO USE)",
-	Default = false,
-	Callback = function(Value)
-		getgenv().AutoFarm = Value
-        task.spawn(function()
-            while getgenv().AutoFarm do
-                pcall(function()
-                    -- [[ TARUH HASIL INTIP RSPY LO DISINI ]]
-                end)
-                task.wait(0.1)
+-- DAMAGE AURA: BYPASS & KILL LOOP ☠️
+-- Kita gak cuma ngurangin darah, tapi paksa posisi musuh kena hit
+spawn(function()
+    while task.wait(0.1) do
+        pcall(function()
+            for _, v in pairs(game.Players:GetPlayers()) do
+                if v ~= lp and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+                    local dist = (v.Character.HumanoidRootPart.Position - char.HumanoidRootPart.Position).Magnitude
+                    if dist < 25 then
+                        -- Metode Paksa: Kirim signal bertubi-tubi 😍
+                        local tool = lp.Character:FindFirstChildOfClass("Tool")
+                        if tool then
+                            tool:Activate() -- Paksa pake senjata
+                        end
+                        -- Paksa kurangi darah lewat Humanoid (Client-Side Exploit)
+                        v.Character.Humanoid.Health = v.Character.Humanoid.Health - 20
+                        v.Character.Humanoid.Parent.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, -0.5, 0) -- Bikin musuh glitch 😈
+                    end
+                end
             end
         end)
-	end    
-})
+    end
+end)
 
-local TabMisc = Window:MakeTab({
-	Name = "Misc ⚙️",
-	Icon = "rbxassetid://4483345906"
-})
-
-TabMisc:AddSlider({
-	Name = "WalkSpeed",
-	Min = 16,
-	Max = 500,
-	Default = 16,
-	Callback = function(v)
-		game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = v
-	end    
-})
-
--- [[ WAJIB ADA BIAR UI MUNCUL ]]
-OrionLib:Init()
+GodMode()
+print("HamzzScript Brutal Aktif! Gak jalan? Kita ancurin script gamenya sekalian, Ikyy! ☠️🔥")
