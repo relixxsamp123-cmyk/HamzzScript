@@ -1,72 +1,101 @@
--- [[ HAMZZSCRIPT ULTIMATE FORCE UI - BY IKYY ]] --
--- RESET SEMUA UI LAMA 😈
-pcall(function()
-    for _, v in pairs(game.CoreGui:GetChildren()) do
-        if v.Name == "HamzzScript_Premium" then v:Destroy() end
-    end
-end)
+-- [[ HAMZZSCRIPT V7: APOCALYPSE MODE - BY IKYY ]] --
+local CoreGui = game:GetService("CoreGui")
+pcall(function() CoreGui.HamzzScript_Premium:Destroy() end)
 
-local lp = game.Players.LocalPlayer
-local sg = Instance.new("ScreenGui")
+local sg = Instance.new("ScreenGui", CoreGui)
 sg.Name = "HamzzScript_Premium"
-sg.Parent = game.CoreGui
-sg.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- FRAME UTAMA (PASTI MUNCUL KONTOL) ☠️
 local Main = Instance.new("Frame", sg)
-Main.BackgroundColor3 = Color3.fromRGB(20, 0, 0)
+Main.BackgroundColor3 = Color3.fromRGB(10, 0, 0)
+Main.Size = UDim2.new(0, 250, 0, 320)
+Main.Position = UDim2.new(0.5, -125, 0.3, 0)
 Main.BorderSizePixel = 3
-Main.Position = UDim2.new(0.5, -100, 0.2, 0)
-Main.Size = UDim2.new(0, 200, 0, 250)
+Main.BorderColor3 = Color3.fromRGB(255, 0, 0)
 Main.Active = true
-Main.Draggable = true -- Bisa lo geser! 😍
+Main.Draggable = true
 
 local Title = Instance.new("TextLabel", Main)
-Title.Size = UDim2.new(1, 0, 0, 40)
-Title.Text = "HAMZZ SCRIPT V4 ☠️"
-Title.BackgroundColor3 = Color3.fromRGB(50, 0, 0)
+Title.Size = UDim2.new(1, 0, 0, 45)
+Title.Text = "HAMZZ V7: APOCALYPSE ☠️"
+Title.BackgroundColor3 = Color3.fromRGB(60, 0, 0)
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 18
 Title.Font = Enum.Font.GothamBold
 
--- [[ FUNGSI AUTO KILL & GOD MODE ]] --
-spawn(function()
-    while task.wait(0.01) do
-        pcall(function()
-            -- GOD MODE STUCK 😍
-            lp.Character.Humanoid.MaxHealth = 9e9
-            lp.Character.Humanoid.Health = 9e9
-            
-            -- DAMAGE AURA MAX RADIUS 😈
-            for _, v in pairs(game.Players:GetPlayers()) do
-                if v ~= lp and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-                    local dist = (v.Character.HumanoidRootPart.Position - lp.Character.HumanoidRootPart.Position).Magnitude
-                    if dist < 300 then -- Radius lebih gila lagi!
-                        v.Character.Humanoid.Health = -999
-                        -- Coba tembak semua remote
-                        for _, r in pairs(game:GetDescendants()) do
-                            if r:IsA("RemoteEvent") and (r.Name:lower():find("hit") or r.Name:lower():find("attack")) then
-                                r:FireServer(v.Character.Humanoid, math.huge)
+-- FUNGSI TOMBOL PEMBANTAI 😈
+local function CreateBtn(name, pos, color, callback)
+    local btn = Instance.new("TextButton", Main)
+    btn.Size = UDim2.new(0.9, 0, 0, 50)
+    btn.Position = UDim2.new(0.05, 0, 0, pos)
+    btn.Text = name
+    btn.BackgroundColor3 = color
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 14
+    local corner = Instance.new("UICorner", btn)
+    corner.CornerRadius = UDim.new(0, 10)
+    btn.MouseButton1Click:Connect(callback)
+end
+
+-- 1. GOD MODE ABADI (Darah Gak Ngurang Jembot!) ☠️
+CreateBtn("GOD MODE: ABADI 😈", 60, Color3.fromRGB(150, 0, 0), function()
+    _G.GodMode = true
+    print("God Mode Active, Ikyy! ☠️")
+    spawn(function()
+        while _G.GodMode do
+            task.wait()
+            pcall(function()
+                local hum = game.Players.LocalPlayer.Character.Humanoid
+                hum.MaxHealth = 999999
+                hum.Health = 999999
+                hum:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
+            end)
+        end
+    end)
+end)
+
+-- 2. MASSIVE DAMAGE AURA (Radius & Damage MAX) ☠️🔥
+CreateBtn("AURA: DESTRUCTION ☠️", 125, Color3.fromRGB(200, 0, 0), function()
+    _G.DamageAura = true
+    print("Aura Active, Sikat Semua! 😈")
+    spawn(function()
+        while _G.DamageAura do
+            task.wait(0.05)
+            pcall(function()
+                local lp = game.Players.LocalPlayer
+                for _, v in pairs(game.Players:GetPlayers()) do
+                    if v ~= lp and v.Character and v.Character:FindFirstChild("Humanoid") then
+                        local dist = (v.Character.HumanoidRootPart.Position - lp.Character.HumanoidRootPart.Position).Magnitude
+                        if dist < 500 then -- Radius Raksasa! 😍
+                            -- Tembak Remote Brutal
+                            for _, r in pairs(game:GetDescendants()) do
+                                if r:IsA("RemoteEvent") and (r.Name:lower():find("hit") or r.Name:lower():find("attack") or r.Name:lower():find("damage")) then
+                                    r:FireServer(v.Character.Humanoid, math.huge)
+                                end
                             end
+                            v.Character.Humanoid.Health = -100 -- Force Kill
                         end
                     end
                 end
-            end
-        end)
-    end
+            end)
+        end
+    end)
 end)
 
--- [[ ESP: LIAT MUSUH TEMBUS TEMBOK ]] 😋
-spawn(function()
-    while task.wait(1) do
-        for _, v in pairs(game.Players:GetPlayers()) do
-            if v ~= lp and v.Character and not v.Character:FindFirstChild("HamzzESP") then
-                local b = Instance.new("BoxHandleAdornment", v.Character)
-                b.Name = "HamzzESP"
-                b.Adornee = v.Character
-                b.AlwaysOnTop = true
-                b.ZIndex = 10
-                b.Size = v.Character:GetExtentsSize()
-                b.Transparency = 0.5
+-- 3. SPEED & JUMP HACK ⚡
+CreateBtn("BRUTAL SPEED & JUMP ⚡", 190, Color3.fromRGB(255, 0, 0), function()
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 150
+    game.Players.LocalPlayer.Character.Humanoid.JumpPower = 150
+end)
+
+-- 4. OFF SCRIPT ❌
+CreateBtn("CLOSE & STOP ALL ❌", 255, Color3.fromRGB(40, 40, 40), function()
+    _G.GodMode = false
+    _G.DamageAura = false
+    sg:Destroy()
+end)
+
+print("HAMZZSCRIPT V7: LOADED! DARAH ABADI + DAMAGE MAX SIAP! ☠️🔥")                b.Transparency = 0.5
                 b.Color3 = Color3.fromRGB(255, 0, 0)
             end
         end
