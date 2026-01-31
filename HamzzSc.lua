@@ -1,62 +1,53 @@
--- [[ HAMZZSCRIPT: GOD & BRUTAL DAMAGE - BY IKYY ]] --
-local lp = game.Players.LocalPlayer
-local char = lp.Character or lp.CharacterAdded:Wait()
-
--- AUTO-TOOL & REMOTE FINDER 😈
-local function getAttackData()
-    local tool = lp.Backpack:FindFirstChildOfClass("Tool") or char:FindFirstChildOfClass("Tool")
-    local remote = nil
-    for _, v in pairs(game:GetDescendants()) do
-        if v:IsA("RemoteEvent") or v:IsA("RemoteFunction") then
-            local n = v.Name:lower()
-            if n:find("hit") or n:find("attack") or n:find("damage") or n:find("combat") then
-                remote = v
-                break
-            end
-        end
+-- [[ HAMZZSCRIPT ULTIMATE FORCE UI - BY IKYY ]] --
+-- RESET SEMUA UI LAMA 😈
+pcall(function()
+    for _, v in pairs(game.CoreGui:GetChildren()) do
+        if v.Name == "HamzzScript_Premium" then v:Destroy() end
     end
-    return tool, remote
-end
+end)
 
--- LOOP UTAMA PEMBANTAIAN ☠️🔥
+local lp = game.Players.LocalPlayer
+local sg = Instance.new("ScreenGui")
+sg.Name = "HamzzScript_Premium"
+sg.Parent = game.CoreGui
+sg.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+-- FRAME UTAMA (PASTI MUNCUL KONTOL) ☠️
+local Main = Instance.new("Frame", sg)
+Main.BackgroundColor3 = Color3.fromRGB(20, 0, 0)
+Main.BorderSizePixel = 3
+Main.Position = UDim2.new(0.5, -100, 0.2, 0)
+Main.Size = UDim2.new(0, 200, 0, 250)
+Main.Active = true
+Main.Draggable = true -- Bisa lo geser! 😍
+
+local Title = Instance.new("TextLabel", Main)
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.Text = "HAMZZ SCRIPT V4 ☠️"
+Title.BackgroundColor3 = Color3.fromRGB(50, 0, 0)
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.Font = Enum.Font.GothamBold
+
+-- [[ FUNGSI AUTO KILL & GOD MODE ]] --
 spawn(function()
-    while task.wait(0.01) do -- Speed Iblis!
+    while task.wait(0.01) do
         pcall(function()
-            local currentTool, killRemote = getAttackData()
+            -- GOD MODE STUCK 😍
+            lp.Character.Humanoid.MaxHealth = 9e9
+            lp.Character.Humanoid.Health = 9e9
             
-            -- 1. MODE GOD BRUTAL (GAK BAKAL KURANG DARAHNYA) 😈
-            if lp.Character and lp.Character:FindFirstChild("Humanoid") then
-                lp.Character.Humanoid.MaxHealth = 999999
-                lp.Character.Humanoid.Health = 999999
-                -- Cegah mati konyol
-                if lp.Character.Humanoid.Health < 100 then
-                     lp.Character.Humanoid.Health = 999999
-                end
-            end
-
-            -- 2. DAMAGE AURA MASSIVE (MAX DAMAGE) ☠️
+            -- DAMAGE AURA MAX RADIUS 😈
             for _, v in pairs(game.Players:GetPlayers()) do
                 if v ~= lp and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
                     local dist = (v.Character.HumanoidRootPart.Position - lp.Character.HumanoidRootPart.Position).Magnitude
-                    
-                    if dist <= 250 then -- Radius Raksasa
-                        -- Paksa Pegang Senjata biar damage masuk! 😍
-                        if currentTool and not char:FindFirstChild(currentTool.Name) then
-                            lp.Character.Humanoid:EquipTool(currentTool)
-                        end
-
-                        -- Tembak Remote Server secara Brutal 😈
-                        if killRemote then
-                            if killRemote:IsA("RemoteEvent") then
-                                killRemote:FireServer(v.Character.Humanoid, math.huge)
-                                killRemote:FireServer(v.Character.HumanoidRootPart, math.huge)
-                            else
-                                killRemote:InvokeServer(v.Character.Humanoid, math.huge)
+                    if dist < 300 then -- Radius lebih gila lagi!
+                        v.Character.Humanoid.Health = -999
+                        -- Coba tembak semua remote
+                        for _, r in pairs(game:GetDescendants()) do
+                            if r:IsA("RemoteEvent") and (r.Name:lower():find("hit") or r.Name:lower():find("attack")) then
+                                r:FireServer(v.Character.Humanoid, math.huge)
                             end
                         end
-
-                        -- Override Health Musuh (Client-Side Kill) ☠️
-                        v.Character.Humanoid.Health = -999999
                     end
                 end
             end
@@ -64,14 +55,25 @@ spawn(function()
     end
 end)
 
-print("HAMZZSCRIPT: GOD BRUTAL & DAMAGE MAX LOADED! SIKAT SEMUA KONTOL ITU, IKYY! ☠️🔥")    btnCorner.CornerRadius = UDim.new(0, 6)
-    btnCorner.Parent = btn
-    
-    btn.MouseButton1Click:Connect(callback)
-end
+-- [[ ESP: LIAT MUSUH TEMBUS TEMBOK ]] 😋
+spawn(function()
+    while task.wait(1) do
+        for _, v in pairs(game.Players:GetPlayers()) do
+            if v ~= lp and v.Character and not v.Character:FindFirstChild("HamzzESP") then
+                local b = Instance.new("BoxHandleAdornment", v.Character)
+                b.Name = "HamzzESP"
+                b.Adornee = v.Character
+                b.AlwaysOnTop = true
+                b.ZIndex = 10
+                b.Size = v.Character:GetExtentsSize()
+                b.Transparency = 0.5
+                b.Color3 = Color3.fromRGB(255, 0, 0)
+            end
+        end
+    end
+end)
 
--- DAFTAR FITUR MAUT ☠️🔥
-createButton("ACTIVATE GOD MODE ☠️", function()
+print("HAMZZSCRIPT V4 FORCE LOADED! ☠️🔥")createButton("ACTIVATE GOD MODE ☠️", function()
     print("God Mode On!")
     spawn(function()
         while task.wait() do
