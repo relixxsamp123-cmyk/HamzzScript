@@ -6,7 +6,12 @@ local TopBar = Instance.new("Frame")
 local Title = Instance.new("TextLabel")
 local Content = Instance.new("ScrollingFrame")
 local UIListLayout = Instance.new("UIListLayout")
+local RS = game:GetService("ReplicatedStorage")
 
+-- Jalur Remote Khusus Solo Leveling
+local AbilityRemote = RS:WaitForChild("RemoteServices"):WaitForChild("AttackService"):WaitForChild("RE"):WaitForChild("AbilityRemote")
+
+-- Hapus UI lama biar gak numpuk
 pcall(function() game.CoreGui:FindFirstChild("HamzzScript_Premium"):Destroy() end)
 
 ScreenGui.Name = "HamzzScript_Premium"
@@ -16,14 +21,16 @@ ScreenGui.ResetOnSpawn = false
 MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
 MainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+MainFrame.BackgroundTransparency = 0.1
 MainFrame.Position = UDim2.new(0.5, -125, 0.4, -100)
-MainFrame.Size = UDim2.new(0, 250, 0, 300)
+MainFrame.Size = UDim2.new(0, 250, 0, 320)
 MainFrame.Active = true
 MainFrame.Draggable = true
 
 UICorner.CornerRadius = UDim.new(0, 10)
 UICorner.Parent = MainFrame
 
+-- Top Bar Merah V3 Style
 TopBar.Name = "TopBar"
 TopBar.Parent = MainFrame
 TopBar.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
@@ -51,27 +58,87 @@ Content.ScrollBarThickness = 3
 UIListLayout.Parent = Content
 UIListLayout.Padding = UDim.new(0, 8)
 
-local function createButton(name, callback)
+-- State Fitur
+_G.God = false
+_G.Aura = false
+_G.InfDash = false
+
+local function createButton(name, var)
     local btn = Instance.new("TextButton")
     local btnCorner = Instance.new("UICorner")
+    
+    btn.Name = name
     btn.Parent = Content
-    btn.Size = UDim2.new(1, 0, 0, 40)
+    btn.Size = UDim2.new(1, 0, 0, 45)
     btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.Text = name
+    btn.Text = name .. ": OFF"
     btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 14
+    btn.TextSize = 13
+    
     btnCorner.CornerRadius = UDim.new(0, 6)
     btnCorner.Parent = btn
-    btn.MouseButton1Click:Connect(callback)
+    
+    btn.MouseButton1Click:Connect(function()
+        _G[var] = not _G[var]
+        if _G[var] then
+            btn.Text = name .. ": ON 😈"
+            btn.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+        else
+            btn.Text = name .. ": OFF"
+            btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        end
+    end)
 end
 
-createButton("GOD MODE (ABADI) ☠️", function()
-    _G.God = true
-    spawn(function()
-        while _G.God do
-            task.wait()
-            pcall(function()
+-- Tambah Fitur ke Menu
+createButton("GOD MODE ABADI ☠️", "God")
+createButton("INFINITE DASH ⚡", "InfDash")
+createButton("AURA DAMAGE MAX 😈", "Aura")
+
+createButton("DESTROY UI ❌", "Destroy") -- Tombol destroy khusus
+
+-- Logika Belakang Layar
+spawn(function()
+    while task.wait(0.01) do
+        pcall(function()
+            local char = lp.Character
+            if char and char:FindFirstChild("Humanoid") then
+                -- 1. God Mode
+                if _G.God then
+                    char.Humanoid.MaxHealth = 9e15
+                    char.Humanoid.Health = 9e15
+                end
+                
+                -- 2. Dash Tanpa Batas
+                if _G.InfDash then
+                    AbilityRemote:FireServer("DashSlot", "Start")
+                end
+                
+                -- 3. Damage Aura Max Radius
+                if _G.Aura then
+                    for _, v in pairs(game.Workspace:GetDescendants()) do
+                        if v:IsA("Humanoid") and not v:IsDescendantOf(char) then
+                            local root = v.Parent:FindFirstChild("HumanoidRootPart")
+                            if root and (root.Position - char.HumanoidRootPart.Position).Magnitude < 10000 then
+                                AbilityRemote:FireServer("AttackSlot", "Start", v.Parent)
+                                v.Health = -math.huge
+                            end
+                        end
+                    end
+                end
+                
+                -- Cleanup
+                if _G.Destroy then
+                    _G.God = false
+                    _G.Aura = false
+                    _G.InfDash = false
+                    ScreenGui:Destroy()
+                end
+            end
+        end)
+    end
+end)            pcall(function()
                 lp.Character.Humanoid.MaxHealth = 9e9
                 lp.Character.Humanoid.Health = 9e9
                 lp.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
