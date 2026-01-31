@@ -1,77 +1,97 @@
-local lp = game.Players.LocalPlayer
-local ScreenGui = Instance.new("ScreenGui")
-local MainFrame = Instance.new("Frame")
-local UICorner = Instance.new("UICorner")
-local TopBar = Instance.new("Frame")
-local Title = Instance.new("TextLabel")
-local Content = Instance.new("ScrollingFrame")
-local UIListLayout = Instance.new("UIListLayout")
-local RS = game:GetService("ReplicatedStorage")
+-- [[ Hamzz Hub | Ultimate Tsunami God Mode ]] --
+-- [[ Credit: Hamzz Mods | User: Ikyy ]] --
 
--- Jalur Remote Khusus Solo Leveling
-local AbilityRemote = RS:WaitForChild("RemoteServices"):WaitForChild("AttackService"):WaitForChild("RE"):WaitForChild("AbilityRemote")
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--- Hapus UI lama biar gak numpuk
-pcall(function() game.CoreGui:FindFirstChild("HamzzScript_Premium"):Destroy() end)
+local Window = Rayfield:CreateWindow({
+   Name = "Hamzz Hub | Tsunami Fix 🌊",
+   LoadingTitle = "Mematikan Sensor Kematian...",
+   LoadingSubtitle = "by Hamzz Mods",
+   ConfigurationSaving = { Enabled = false },
+   KeySystem = false
+})
 
-ScreenGui.Name = "HamzzScript_Premium"
-ScreenGui.Parent = game.CoreGui
-ScreenGui.ResetOnSpawn = false
+local TsunamiTab = Window:CreateTab("Anti-Die 🛡️", 4483362458)
+local StealTab = Window:CreateTab("Stealer 💰", 4483362458)
 
-MainFrame.Name = "MainFrame"
-MainFrame.Parent = ScreenGui
-MainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-MainFrame.BackgroundTransparency = 0.1
-MainFrame.Position = UDim2.new(0.5, -125, 0.4, -100)
-MainFrame.Size = UDim2.new(0, 250, 0, 320)
-MainFrame.Active = true
-MainFrame.Draggable = true
+-- [[ FEATURE: GOD MODE ANTI-DIE (FIXED) ]] --
+TsunamiTab:CreateToggle({
+   Name = "Kebal Tsunami (Invisible Body)",
+   CurrentValue = false,
+   Flag = "GodTsunami",
+   Callback = function(Value)
+      _G.GodTsunami = Value
+      local plr = game.Players.LocalPlayer
+      
+      task.spawn(function()
+         while _G.GodTsunami do
+            pcall(function()
+               local char = plr.Character
+               if char then
+                  -- Teknik 1: Hapus TouchInterest biar air gak bisa "nyentuh" lo
+                  for _, part in pairs(char:GetDescendants()) do
+                     if part:IsA("TouchTransmitter") or part:IsA("TouchInterest") then
+                        part:Destroy()
+                     end
+                  end
+                  -- Teknik 2: Lock HP di atas batas maksimal
+                  char.Humanoid.MaxHealth = 9e9
+                  char.Humanoid.Health = 9e9
+               end
+            end)
+            task.wait(0.1)
+         end
+         -- Balikin normal (Reset buat fix HP)
+         if not _G.GodTsunami then
+            plr.Character.Humanoid.Health = 100
+         end
+      end)
+      Rayfield:Notify({Title = "God Mode", Content = Value and "KEBAL TOTAL AKTIF! ☠️" or "Mode Lemah...", Duration = 3})
+   end,
+})
 
-UICorner.CornerRadius = UDim.new(0, 10)
-UICorner.Parent = MainFrame
+-- [[ FEATURE: INSTALL STEAL (ITEM RAMPOK) ]] --
+StealTab:CreateButton({
+   Name = "Install & Steal Inventory",
+   Callback = function()
+      local localPlr = game.Players.LocalPlayer
+      for _, otherPlr in pairs(game.Players:GetPlayers()) do
+         if otherPlr ~= localPlr then
+            -- Cek Backpack
+            for _, item in pairs(otherPlr.Backpack:GetChildren()) do
+               if item:IsA("Tool") then
+                  item.Parent = localPlr.Backpack
+               end
+            end
+            -- Cek Character (Kalo lagi dipegang)
+            if otherPlr.Character then
+               for _, item in pairs(otherPlr.Character:GetChildren()) do
+                  if item:IsA("Tool") then
+                     item.Parent = localPlr.Backpack
+                  end
+               end
+            end
+         end
+      end
+      Rayfield:Notify({Title = "Rampok Berhasil!", Content = "Semua item mereka jadi milik lo! 😈", Duration = 3})
+   end,
+})
 
--- Top Bar Merah V3 Style
-TopBar.Name = "TopBar"
-TopBar.Parent = MainFrame
-TopBar.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-TopBar.Size = UDim2.new(1, 0, 0, 35)
+TsunamiTab:CreateButton({
+   Name = "Noclip (Bisa Jalan di Air)",
+   Callback = function()
+      _G.Noclip = true
+      game:GetService("RunService").Stepped:Connect(function()
+         if _G.Noclip then
+            for _, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+               if v:IsA("BasePart") then v.CanCollide = false end
+            end
+         end
+      end)
+   end,
+})
 
-local TopCorner = Instance.new("UICorner")
-TopCorner.CornerRadius = UDim.new(0, 10)
-TopCorner.Parent = TopBar
-
-Title.Parent = TopBar
-Title.Text = "HAMZZ SCRIPT V3 😈"
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextSize = 18
-Title.Font = Enum.Font.GothamBold
-Title.Size = UDim2.new(1, 0, 1, 0)
-Title.BackgroundTransparency = 1
-
-Content.Parent = MainFrame
-Content.Position = UDim2.new(0, 5, 0, 45)
-Content.Size = UDim2.new(1, -10, 1, -50)
-Content.BackgroundTransparency = 1
-Content.CanvasSize = UDim2.new(0, 0, 1.5, 0)
-Content.ScrollBarThickness = 3
-
-UIListLayout.Parent = Content
-UIListLayout.Padding = UDim.new(0, 8)
-
--- State Fitur
-_G.God = false
-_G.Aura = false
-_G.InfDash = false
-
-local function createButton(name, var)
-    local btn = Instance.new("TextButton")
-    local btnCorner = Instance.new("UICorner")
-    
-    btn.Name = name
-    btn.Parent = Content
-    btn.Size = UDim2.new(1, 0, 0, 45)
-    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+Rayfield:Notify({Title = "FIXED!", Content = "Gak bakal mati lagi kena air, jembot! 😍☠️", Duration = 5})    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
     btn.Text = name .. ": OFF"
     btn.Font = Enum.Font.GothamBold
     btn.TextSize = 13
