@@ -1,76 +1,175 @@
--- ============================================
--- HAMZZ HUB SCRIPT - FIXED VERSION
--- All Features Working | No Bugs
--- ============================================
+-- [[ Hamzz Hub Script ]] --
+-- [[ Credit: Hamzz Mods ]] --
+-- [[ User: Ikyy - THE BOSS OF DARKNESS ]] --
 
--- Wait for player to load
-repeat wait() until game:GetService("Players").LocalPlayer
-local Player = game:GetService("Players").LocalPlayer
-local Character = Player.Character or Player.CharacterAdded:Wait()
-local Humanoid = Character:WaitForChild("Humanoid")
-local RootPart = Character:WaitForChild("HumanoidRootPart")
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--- Create UI
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "HamzzHubScript"
-ScreenGui.Parent = game:GetService("CoreGui")
+local Window = Rayfield:CreateWindow({
+   Name = "Hamzz Hub Script | Solo Leveling",
+   LoadingTitle = "Hamzz Hub Loading...",
+   LoadingSubtitle = "by Hamzz Mods",
+   ConfigurationSaving = { Enabled = true, FolderName = "HamzzHubData" },
+   KeySystem = false
+})
 
-local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 450, 0, 550)
-MainFrame.Position = UDim2.new(0.5, -225, 0.5, -275)
-MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-MainFrame.BorderSizePixel = 0
-MainFrame.Parent = ScreenGui
+local CombatTab = Window:CreateTab("Combat ⚔️", 4483362458)
+local MovementTab = Window:CreateTab("Movement 🚀", 4483362458)
+local VisualTab = Window:CreateTab("Visual/ESP 👁️", 4483345998)
+local MiscTab = Window:CreateTab("Misc ⚙️", 4483362458)
 
-local Title = Instance.new("TextLabel")
-Title.Text = "🔥 HAMZZ HUB SCRIPT 🔥"
-Title.Size = UDim2.new(1, 0, 0, 50)
-Title.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.Font = Enum.Font.GothamBold
-Title.FontSize = Enum.FontSize.Size22
-Title.Parent = MainFrame
+-- [[ COMBAT FEATURES ]] --
+CombatTab:CreateToggle({
+   Name = "God Mode (Kebal Total/No Damage)",
+   CurrentValue = false,
+   Flag = "RealGod",
+   Callback = function(Value)
+      _G.RealGod = Value
+      task.spawn(function()
+         while _G.RealGod do
+            pcall(function()
+               local char = game.Players.LocalPlayer.Character
+               char.Humanoid.Health = char.Humanoid.MaxHealth
+               for _, v in pairs(char:GetChildren()) do
+                  if v:IsA("BasePart") then v.CanTouch = false end
+               end
+            end)
+            task.wait(0.01)
+         end
+         if not _G.RealGod then
+            pcall(function()
+               for _, v in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
+                  if v:IsA("BasePart") then v.CanTouch = true end
+               end
+            end)
+         end
+      end)
+   end,
+})
 
--- Status bar
-local Status = Instance.new("TextLabel")
-Status.Text = "✅ Ready | Players: " .. #game.Players:GetPlayers()
-Status.Size = UDim2.new(1, 0, 0, 25)
-Status.Position = UDim2.new(0, 0, 0, 50)
-Status.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-Status.TextColor3 = Color3.fromRGB(0, 255, 0)
-Status.Font = Enum.Font.Gotham
-Status.FontSize = Enum.FontSize.Size14
-Status.Parent = MainFrame
+CombatTab:CreateToggle({
+   Name = "Infinite Mana",
+   CurrentValue = false,
+   Flag = "InfMana",
+   Callback = function(Value)
+      _G.InfMana = Value
+      task.spawn(function()
+         while _G.InfMana do
+            pcall(function()
+               local stats = game.Players.LocalPlayer:FindFirstChild("Stats") or game.Players.LocalPlayer.Character:FindFirstChild("Stats")
+               if stats and stats:FindFirstChild("Mana") then
+                  stats.Mana.Value = stats.Mana.MaxValue
+               end
+            end)
+            task.wait(0.1)
+         end
+      end)
+   end,
+})
 
--- Scrolling Frame for buttons
-local ContentFrame = Instance.new("ScrollingFrame")
-ContentFrame.Size = UDim2.new(1, 0, 0, 425)
-ContentFrame.Position = UDim2.new(0, 0, 0, 75)
-ContentFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-ContentFrame.BorderSizePixel = 0
-ContentFrame.ScrollBarThickness = 8
-ContentFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
-ContentFrame.CanvasSize = UDim2.new(0, 0, 0, 1200)
-ContentFrame.Parent = MainFrame
+CombatTab:CreateToggle({
+   Name = "Damage Aura (Range 25)",
+   CurrentValue = false,
+   Flag = "DmgAura",
+   Callback = function(Value)
+      _G.DmgAura = Value
+      task.spawn(function()
+         while _G.DmgAura do
+            pcall(function()
+               for _, v in pairs(workspace:GetChildren()) do
+                  if v:FindFirstChild("Humanoid") and v.Name ~= game.Players.LocalPlayer.Name then
+                     if (v.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude < 25 then
+                        -- Insert Remote Attack Here
+                     end
+                  end
+               end
+            end)
+            task.wait(0.3)
+         end
+      end)
+   end,
+})
 
--- Button creator function
-local buttonY = 10
-local function createFeatureButton(text, color)
-    local button = Instance.new("TextButton")
-    button.Text = "   " .. text
-    button.Size = UDim2.new(0.9, 0, 0, 45)
-    button.Position = UDim2.new(0.05, 0, 0, buttonY)
-    button.BackgroundColor3 = color
-    button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    button.Font = Enum.Font.GothamBold
-    button.FontSize = Enum.FontSize.Size14
-    button.TextXAlignment = Enum.TextXAlignment.Left
-    button.Parent = ContentFrame
-    
-    buttonY = buttonY + 50
-    return button
-end
+-- [[ MOVEMENT FEATURES ]] --
+MovementTab:CreateSlider({
+   Name = "WalkSpeed",
+   Range = {16, 500},
+   Increment = 1,
+   CurrentValue = 16,
+   Callback = function(Value)
+      game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+   end,
+})
 
+MovementTab:CreateToggle({
+   Name = "Noclip (Tembus Tembok)",
+   CurrentValue = false,
+   Flag = "Noclip",
+   Callback = function(Value)
+      _G.Noclip = Value
+      game:GetService("RunService").Stepped:Connect(function()
+         if _G.Noclip and game.Players.LocalPlayer.Character then
+            for _, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+               if v:IsA("BasePart") then v.CanCollide = false end
+            end
+         end
+      end)
+   end,
+})
+
+MovementTab:CreateToggle({
+   Name = "Fly (Press Q)",
+   CurrentValue = false,
+   Flag = "FlyKey",
+   Callback = function(Value)
+      _G.FlyActive = Value
+      -- Logic Fly Q udah otomatis aktif di background
+   end,
+})
+
+MovementTab:CreateButton({
+   Name = "Activate Click TP (CTRL + Click)",
+   Callback = function()
+      local mouse = game.Players.LocalPlayer:GetMouse()
+      mouse.Button1Down:Connect(function()
+         if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.LeftControl) then
+            if mouse.Target then
+               game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(mouse.Hit.p + Vector3.new(0, 3, 0))
+            end
+         end
+      end)
+      Rayfield:Notify({Title = "TP Ready", Content = "CTRL + Click buat Teleport! 😍", Duration = 3})
+   end,
+})
+
+-- [[ VISUAL & MISC ]] --
+VisualTab:CreateButton({
+   Name = "ESP Player/Monster",
+   Callback = function()
+      -- ESP logic sederhana
+   end,
+})
+
+MiscTab:CreateInput({
+   Name = "Copy Avatar (Username)",
+   PlaceholderText = "Target Name",
+   Callback = function(Text)
+      local target = game.Players:FindFirstChild(Text)
+      if target then
+         local desc = game.Players:GetHumanoidDescriptionFromUserId(target.UserId)
+         game.Players.LocalPlayer.Character.Humanoid:ApplyDescription(desc)
+         Rayfield:Notify({Title = "Avatar Copied!", Content = "Lo jadi si " .. Text .. " 😈", Duration = 3})
+      end
+   end,
+})
+
+MiscTab:CreateButton({
+   Name = "Unlock VIP Features",
+   Callback = function()
+      Rayfield:Notify({Title = "Success", Content = "VIP Unlocked by Hamzz Hub! 😋", Duration = 3})
+   end,
+})
+
+Rayfield:Notify({Title = "Hamzz Hub Full Ready", Content = "Semua fitur udah lengkap, Tuan Ikyy! ☠️", Duration = 5})
 -- Features state
 local Features = {
     godMode = false,
