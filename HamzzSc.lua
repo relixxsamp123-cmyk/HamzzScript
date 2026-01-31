@@ -1,72 +1,70 @@
--- [[ HAMZZSCRIPT PREMIUM UI BY IKYY ]] --
-local ScreenGui = Instance.new("ScreenGui")
-local MainFrame = Instance.new("Frame")
-local UICorner = Instance.new("UICorner")
-local TopBar = Instance.new("Frame")
-local Title = Instance.new("TextLabel")
-local Content = Instance.new("ScrollingFrame")
-local UIListLayout = Instance.new("UIListLayout")
+-- [[ HAMZZSCRIPT: GOD & BRUTAL DAMAGE - BY IKYY ]] --
+local lp = game.Players.LocalPlayer
+local char = lp.Character or lp.CharacterAdded:Wait()
 
--- Setup UI 😈
-ScreenGui.Name = "HamzzScript_Premium"
-ScreenGui.Parent = game.CoreGui
+-- AUTO-TOOL & REMOTE FINDER 😈
+local function getAttackData()
+    local tool = lp.Backpack:FindFirstChildOfClass("Tool") or char:FindFirstChildOfClass("Tool")
+    local remote = nil
+    for _, v in pairs(game:GetDescendants()) do
+        if v:IsA("RemoteEvent") or v:IsA("RemoteFunction") then
+            local n = v.Name:lower()
+            if n:find("hit") or n:find("attack") or n:find("damage") or n:find("combat") then
+                remote = v
+                break
+            end
+        end
+    end
+    return tool, remote
+end
 
-MainFrame.Name = "MainFrame"
-MainFrame.Parent = ScreenGui
-MainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-MainFrame.BackgroundTransparency = 0.15
-MainFrame.Position = UDim2.new(0.5, -125, 0.4, -100)
-MainFrame.Size = UDim2.new(0, 250, 0, 300)
-MainFrame.Active = true
-MainFrame.Draggable = true
+-- LOOP UTAMA PEMBANTAIAN ☠️🔥
+spawn(function()
+    while task.wait(0.01) do -- Speed Iblis!
+        pcall(function()
+            local currentTool, killRemote = getAttackData()
+            
+            -- 1. MODE GOD BRUTAL (GAK BAKAL KURANG DARAHNYA) 😈
+            if lp.Character and lp.Character:FindFirstChild("Humanoid") then
+                lp.Character.Humanoid.MaxHealth = 999999
+                lp.Character.Humanoid.Health = 999999
+                -- Cegah mati konyol
+                if lp.Character.Humanoid.Health < 100 then
+                     lp.Character.Humanoid.Health = 999999
+                end
+            end
 
-UICorner.CornerRadius = UDim.new(0, 10)
-UICorner.Parent = MainFrame
+            -- 2. DAMAGE AURA MASSIVE (MAX DAMAGE) ☠️
+            for _, v in pairs(game.Players:GetPlayers()) do
+                if v ~= lp and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+                    local dist = (v.Character.HumanoidRootPart.Position - lp.Character.HumanoidRootPart.Position).Magnitude
+                    
+                    if dist <= 250 then -- Radius Raksasa
+                        -- Paksa Pegang Senjata biar damage masuk! 😍
+                        if currentTool and not char:FindFirstChild(currentTool.Name) then
+                            lp.Character.Humanoid:EquipTool(currentTool)
+                        end
 
--- Bar Atas Kece ☠️
-TopBar.Name = "TopBar"
-TopBar.Parent = MainFrame
-TopBar.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-TopBar.Size = UDim2.new(1, 0, 0, 35)
+                        -- Tembak Remote Server secara Brutal 😈
+                        if killRemote then
+                            if killRemote:IsA("RemoteEvent") then
+                                killRemote:FireServer(v.Character.Humanoid, math.huge)
+                                killRemote:FireServer(v.Character.HumanoidRootPart, math.huge)
+                            else
+                                killRemote:InvokeServer(v.Character.Humanoid, math.huge)
+                            end
+                        end
 
-local TopCorner = Instance.new("UICorner")
-TopCorner.CornerRadius = UDim.new(0, 10)
-TopCorner.Parent = TopBar
+                        -- Override Health Musuh (Client-Side Kill) ☠️
+                        v.Character.Humanoid.Health = -999999
+                    end
+                end
+            end
+        end)
+    end
+end)
 
-Title.Parent = TopBar
-Title.Text = "HAMZZ SCRIPT V3 😈"
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextSize = 18
-Title.Font = Enum.Font.GothamBold
-Title.Size = UDim2.new(1, 0, 1, 0)
-Title.BackgroundTransparency = 1
-
--- Konten Fitur 😍
-Content.Parent = MainFrame
-Content.Position = UDim2.new(0, 5, 0, 45)
-Content.Size = UDim2.new(1, -10, 1, -50)
-Content.BackgroundTransparency = 1
-Content.CanvasSize = UDim2.new(0, 0, 2, 0)
-Content.ScrollBarThickness = 3
-
-UIListLayout.Parent = Content
-UIListLayout.Padding = UDim.new(0, 8)
-
--- Fungsi Buat Button Otomatis 😋
-local function createButton(name, callback)
-    local btn = Instance.new("TextButton")
-    local btnCorner = Instance.new("UICorner")
-    
-    btn.Name = name
-    btn.Parent = Content
-    btn.Size = UDim2.new(1, 0, 0, 40)
-    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.Text = name
-    btn.Font = Enum.Font.Gotham
-    btn.TextSize = 14
-    
-    btnCorner.CornerRadius = UDim.new(0, 6)
+print("HAMZZSCRIPT: GOD BRUTAL & DAMAGE MAX LOADED! SIKAT SEMUA KONTOL ITU, IKYY! ☠️🔥")    btnCorner.CornerRadius = UDim.new(0, 6)
     btnCorner.Parent = btn
     
     btn.MouseButton1Click:Connect(callback)
