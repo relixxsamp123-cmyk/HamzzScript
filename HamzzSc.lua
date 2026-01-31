@@ -1,83 +1,115 @@
 local lp = game.Players.LocalPlayer
-local pg = lp:WaitForChild("PlayerGui")
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local UICorner = Instance.new("UICorner")
+local TopBar = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local Content = Instance.new("ScrollingFrame")
+local UIListLayout = Instance.new("UIListLayout")
 
-pcall(function() pg.HamzzUltimate:Destroy() end)
+pcall(function() game.CoreGui:FindFirstChild("HamzzScript_Premium"):Destroy() end)
 
-local sg = Instance.new("ScreenGui", pg)
-sg.Name = "HamzzUltimate"
-sg.ResetOnSpawn = false
+ScreenGui.Name = "HamzzScript_Premium"
+ScreenGui.Parent = game.CoreGui
+ScreenGui.ResetOnSpawn = false
 
-local Main = Instance.new("Frame", sg)
-Main.Size = UDim2.new(0, 250, 0, 220)
-Main.Position = UDim2.new(0.5, -125, 0.4, -110)
-Main.BackgroundColor3 = Color3.fromRGB(15, 0, 0)
-Main.BorderSizePixel = 3
-Main.BorderColor3 = Color3.fromRGB(255, 0, 0)
-Main.Active = true
-Main.Draggable = true
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+MainFrame.Position = UDim2.new(0.5, -125, 0.4, -100)
+MainFrame.Size = UDim2.new(0, 250, 0, 300)
+MainFrame.Active = true
+MainFrame.Draggable = true
 
-local Title = Instance.new("TextLabel", Main)
-Title.Size = UDim2.new(1, 0, 0, 45)
-Title.Text = "HAMZZ V10 DESTRUCTION"
-Title.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-Title.TextColor3 = Color3.fromRGB(255, 0, 0)
+UICorner.CornerRadius = UDim.new(0, 10)
+UICorner.Parent = MainFrame
+
+TopBar.Name = "TopBar"
+TopBar.Parent = MainFrame
+TopBar.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+TopBar.Size = UDim2.new(1, 0, 0, 35)
+
+local TopCorner = Instance.new("UICorner")
+TopCorner.CornerRadius = UDim.new(0, 10)
+TopCorner.Parent = TopBar
+
+Title.Parent = TopBar
+Title.Text = "HAMZZ SCRIPT V3 😈"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 18
 Title.Font = Enum.Font.GothamBold
-Title.TextSize = 16
+Title.Size = UDim2.new(1, 0, 1, 0)
+Title.BackgroundTransparency = 1
 
-_G.God = false
-_G.Aura = false
+Content.Parent = MainFrame
+Content.Position = UDim2.new(0, 5, 0, 45)
+Content.Size = UDim2.new(1, -10, 1, -50)
+Content.BackgroundTransparency = 1
+Content.CanvasSize = UDim2.new(0, 0, 1.5, 0)
+Content.ScrollBarThickness = 3
 
-local function MakeToggle(text, pos, var)
-    local b = Instance.new("TextButton", Main)
-    b.Size = UDim2.new(0.9, 0, 0, 60)
-    b.Position = UDim2.new(0.05, 0, 0, pos)
-    b.Text = text .. ": OFF"
-    b.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    b.TextColor3 = Color3.fromRGB(255, 255, 255)
-    b.Font = Enum.Font.GothamBold
-    b.TextSize = 14
-    
-    b.MouseButton1Click:Connect(function()
-        _G[var] = not _G[var]
-        if _G[var] then
-            b.Text = text .. ": ON"
-            b.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
-        else
-            b.Text = text .. ": OFF"
-            b.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-        end
-    end)
+UIListLayout.Parent = Content
+UIListLayout.Padding = UDim.new(0, 8)
+
+local function createButton(name, callback)
+    local btn = Instance.new("TextButton")
+    local btnCorner = Instance.new("UICorner")
+    btn.Parent = Content
+    btn.Size = UDim2.new(1, 0, 0, 40)
+    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Text = name
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 14
+    btnCorner.CornerRadius = UDim.new(0, 6)
+    btnCorner.Parent = btn
+    btn.MouseButton1Click:Connect(callback)
 end
 
-MakeToggle("GOD MODE ABADI", 55, "God")
-MakeToggle("AURA DAMAGE MAX", 125, "Aura")
+createButton("GOD MODE (ABADI) ☠️", function()
+    _G.God = true
+    spawn(function()
+        while _G.God do
+            task.wait()
+            pcall(function()
+                lp.Character.Humanoid.MaxHealth = 9e9
+                lp.Character.Humanoid.Health = 9e9
+                lp.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
+            end)
+        end
+    end)
+end)
 
-spawn(function()
-    while task.wait(0.05) do
-        pcall(function()
-            local char = lp.Character
-            if char and char:FindFirstChild("Humanoid") then
-                if _G.God then
-                    char.Humanoid.MaxHealth = 9e9
-                    char.Humanoid.Health = 9e9
-                end
-                
-                if _G.Aura then
-                    for _, v in pairs(game.Players:GetPlayers()) do
-                        if v ~= lp and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-                            local d = (v.Character.HumanoidRootPart.Position - char.HumanoidRootPart.Position).Magnitude
-                            if d < 500 then
-                                for _, r in pairs(game:GetDescendants()) do
-                                    if r:IsA("RemoteEvent") and (r.Name:lower():find("hit") or r.Name:lower():find("attack") or r.Name:lower():find("damage")) then
-                                        r:FireServer(v.Character.Humanoid, math.huge)
-                                    end
+createButton("AURA DAMAGE MAX 😈", function()
+    _G.Aura = true
+    spawn(function()
+        while _G.Aura do
+            task.wait(0.1)
+            pcall(function()
+                for _, v in pairs(game.Players:GetPlayers()) do
+                    if v ~= lp and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+                        local dist = (v.Character.HumanoidRootPart.Position - lp.Character.HumanoidRootPart.Position).Magnitude
+                        if dist < 500 then
+                            for _, r in pairs(game:GetDescendants()) do
+                                if r:IsA("RemoteEvent") and (r.Name:lower():find("hit") or r.Name:lower():find("attack") or r.Name:lower():find("damage")) then
+                                    r:FireServer(v.Character.Humanoid, math.huge)
                                 end
-                                v.Character.Humanoid.Health = -math.huge
                             end
+                            v.Character.Humanoid.Health = -math.huge
                         end
                     end
                 end
-            end
-        end)
-    end
+            end)
+        end
+    end)
+end)
+
+createButton("SPEED HACK (X10) ⚡", function()
+    lp.Character.Humanoid.WalkSpeed = 100
+end)
+
+createButton("DESTROY UI ❌", function()
+    _G.God = false
+    _G.Aura = false
+    ScreenGui:Destroy()
 end)
