@@ -1,77 +1,60 @@
--- [[ Hamzz Hub Script | Hydroxide Edition ]] --
--- [[ Credit: Hamzz Mods | User: Ikyy ]] --
+-- [[ Hamzz Hub Script | Kavo Edition FIXED ]] --
+-- [[ User: Ikyy - THE DARK BOSS ]] --
 
--- Load Hydroxide (HamzzScript)
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Upbolt/Hydroxide/revision/init.lua"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Window = Library.CreateLib("Hamzz Hub Premium | Ikyy", "DarkTheme")
 
--- [[ FITUR TAMBAHAN BY IKYY DARKNESS ]] --
+-- [[ LOAD SOURCE UTAMA ]] --
+pcall(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/relixxsamp123-cmyk/HamzzScript/refs/heads/main/HamzzSc.lua"))()
+end)
 
--- 1. GOD MODE ANTI TSUNAMI (KEBAL TOTAL)
-spawn(function()
-    while true do
-        pcall(function()
-            local char = game.Players.LocalPlayer.Character
-            if char and char:FindFirstChild("Humanoid") then
-                -- Lock Darah & Hapus Deteksi Sentuhan Air
+-- [[ TABS ]] --
+local Main = Window:NewTab("Main ⚔️")
+local Section = Main:NewSection("Tsunami & Combat")
+
+-- [[ GOD MODE ANTI MATI ]] --
+Section:NewToggle("God Mode (Kebal Tsunami)", "Bikin lo gak bisa mati jembot!", function(state)
+    _G.God = state
+    task.spawn(function()
+        while _G.God do
+            pcall(function()
+                local char = game.Players.LocalPlayer.Character
                 char.Humanoid.MaxHealth = 9e9
                 char.Humanoid.Health = 9e9
                 for _, v in pairs(char:GetDescendants()) do
-                    if v:IsA("TouchTransmitter") or v:IsA("TouchInterest") then
-                        v:Destroy()
-                    end
+                    if v:IsA("TouchInterest") then v:Destroy() end
                 end
-            end
-        end)
-        task.wait(0.1)
-    end
-end)
-
--- 2. INSTALL STEAL (OTOMATIS RAMPOK ITEM SEKITAR)
-spawn(function()
-    while true do
-        pcall(function()
-            for _, p in pairs(game.Players:GetPlayers()) do
-                if p ~= game.Players.LocalPlayer and p.Character then
-                    -- Ambil barang di backpack
-                    for _, tool in pairs(p.Backpack:GetChildren()) do
-                        if tool:IsA("Tool") then tool.Parent = game.Players.LocalPlayer.Backpack end
-                    end
-                    -- Ambil barang yang lagi dipegang
-                    for _, tool in pairs(p.Character:GetChildren()) do
-                        if tool:IsA("Tool") then tool.Parent = game.Players.LocalPlayer.Backpack end
-                    end
-                end
-            end
-        end)
-        task.wait(1) -- Cek tiap detik biar gak lag
-    end
-end)
-
--- 3. SPEED & NOCLIP
-game:GetService("RunService").Stepped:Connect(function()
-    pcall(function()
-        local char = game.Players.LocalPlayer.Character
-        if char then
-            for _, v in pairs(char:GetDescendants()) do
-                if v:IsA("BasePart") then v.CanCollide = false end
-            end
-            char.Humanoid.WalkSpeed = 100 -- Speed buat lari dari tsunami
+            end)
+            task.wait(0.1)
         end
     end)
 end)
 
-print("Hamzz Hub & HamzzScript Active! Selamat merampok, Ikyy! 😈☠️")         end
-      end
-      Rayfield:Notify({Title = "Rampok Berhasil!", Content = "Semua item mereka jadi milik lo! 😈", Duration = 3})
-   end,
-})
+-- [[ STEALER ]] --
+Section:NewButton("Install Stealer (Rampok)", "Ambil semua item player lain", function()
+    for _, p in pairs(game.Players:GetPlayers()) do
+        if p ~= game.Players.LocalPlayer then
+            for _, t in pairs(p.Backpack:GetChildren()) do
+                if t:IsA("Tool") then t.Parent = game.Players.LocalPlayer.Backpack end
+            end
+        end
+    end
+end)
 
-TsunamiTab:CreateButton({
-   Name = "Noclip (Bisa Jalan di Air)",
-   Callback = function()
-      _G.Noclip = true
-      game:GetService("RunService").Stepped:Connect(function()
-         if _G.Noclip then
+-- [[ MOVEMENT ]] --
+local Move = Window:NewTab("Movement 🚀")
+local MoveSec = Move:NewSection("Speed & Fly")
+
+MoveSec:NewSlider("WalkSpeed", "Lari kenceng jembot", 500, 16, function(s)
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
+end)
+
+MoveSec:NewButton("Fly (Press Q)", "Terbang kayak hantu", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGui/main/FlyGui.lua"))()
+end)
+
+print("IKYY, MENU SEKARANG PASTI MUNCUL! 😈☠️")         if _G.Noclip then
             for _, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
                if v:IsA("BasePart") then v.CanCollide = false end
             end
