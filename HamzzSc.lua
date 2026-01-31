@@ -1,77 +1,66 @@
--- [[ Hamzz Hub | Ultimate Tsunami God Mode ]] --
+-- [[ Hamzz Hub Script | Hydroxide Edition ]] --
 -- [[ Credit: Hamzz Mods | User: Ikyy ]] --
 
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+-- Load Hydroxide (HamzzScript)
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Upbolt/Hydroxide/revision/init.lua"))()
 
-local Window = Rayfield:CreateWindow({
-   Name = "Hamzz Hub | Tsunami Fix 🌊",
-   LoadingTitle = "Mematikan Sensor Kematian...",
-   LoadingSubtitle = "by Hamzz Mods",
-   ConfigurationSaving = { Enabled = false },
-   KeySystem = false
-})
+-- [[ FITUR TAMBAHAN BY IKYY DARKNESS ]] --
 
-local TsunamiTab = Window:CreateTab("Anti-Die 🛡️", 4483362458)
-local StealTab = Window:CreateTab("Stealer 💰", 4483362458)
-
--- [[ FEATURE: GOD MODE ANTI-DIE (FIXED) ]] --
-TsunamiTab:CreateToggle({
-   Name = "Kebal Tsunami (Invisible Body)",
-   CurrentValue = false,
-   Flag = "GodTsunami",
-   Callback = function(Value)
-      _G.GodTsunami = Value
-      local plr = game.Players.LocalPlayer
-      
-      task.spawn(function()
-         while _G.GodTsunami do
-            pcall(function()
-               local char = plr.Character
-               if char then
-                  -- Teknik 1: Hapus TouchInterest biar air gak bisa "nyentuh" lo
-                  for _, part in pairs(char:GetDescendants()) do
-                     if part:IsA("TouchTransmitter") or part:IsA("TouchInterest") then
-                        part:Destroy()
-                     end
-                  end
-                  -- Teknik 2: Lock HP di atas batas maksimal
-                  char.Humanoid.MaxHealth = 9e9
-                  char.Humanoid.Health = 9e9
-               end
-            end)
-            task.wait(0.1)
-         end
-         -- Balikin normal (Reset buat fix HP)
-         if not _G.GodTsunami then
-            plr.Character.Humanoid.Health = 100
-         end
-      end)
-      Rayfield:Notify({Title = "God Mode", Content = Value and "KEBAL TOTAL AKTIF! ☠️" or "Mode Lemah...", Duration = 3})
-   end,
-})
-
--- [[ FEATURE: INSTALL STEAL (ITEM RAMPOK) ]] --
-StealTab:CreateButton({
-   Name = "Install & Steal Inventory",
-   Callback = function()
-      local localPlr = game.Players.LocalPlayer
-      for _, otherPlr in pairs(game.Players:GetPlayers()) do
-         if otherPlr ~= localPlr then
-            -- Cek Backpack
-            for _, item in pairs(otherPlr.Backpack:GetChildren()) do
-               if item:IsA("Tool") then
-                  item.Parent = localPlr.Backpack
-               end
+-- 1. GOD MODE ANTI TSUNAMI (KEBAL TOTAL)
+spawn(function()
+    while true do
+        pcall(function()
+            local char = game.Players.LocalPlayer.Character
+            if char and char:FindFirstChild("Humanoid") then
+                -- Lock Darah & Hapus Deteksi Sentuhan Air
+                char.Humanoid.MaxHealth = 9e9
+                char.Humanoid.Health = 9e9
+                for _, v in pairs(char:GetDescendants()) do
+                    if v:IsA("TouchTransmitter") or v:IsA("TouchInterest") then
+                        v:Destroy()
+                    end
+                end
             end
-            -- Cek Character (Kalo lagi dipegang)
-            if otherPlr.Character then
-               for _, item in pairs(otherPlr.Character:GetChildren()) do
-                  if item:IsA("Tool") then
-                     item.Parent = localPlr.Backpack
-                  end
-               end
+        end)
+        task.wait(0.1)
+    end
+end)
+
+-- 2. INSTALL STEAL (OTOMATIS RAMPOK ITEM SEKITAR)
+spawn(function()
+    while true do
+        pcall(function()
+            for _, p in pairs(game.Players:GetPlayers()) do
+                if p ~= game.Players.LocalPlayer and p.Character then
+                    -- Ambil barang di backpack
+                    for _, tool in pairs(p.Backpack:GetChildren()) do
+                        if tool:IsA("Tool") then tool.Parent = game.Players.LocalPlayer.Backpack end
+                    end
+                    -- Ambil barang yang lagi dipegang
+                    for _, tool in pairs(p.Character:GetChildren()) do
+                        if tool:IsA("Tool") then tool.Parent = game.Players.LocalPlayer.Backpack end
+                    end
+                end
             end
-         end
+        end)
+        task.wait(1) -- Cek tiap detik biar gak lag
+    end
+end)
+
+-- 3. SPEED & NOCLIP
+game:GetService("RunService").Stepped:Connect(function()
+    pcall(function()
+        local char = game.Players.LocalPlayer.Character
+        if char then
+            for _, v in pairs(char:GetDescendants()) do
+                if v:IsA("BasePart") then v.CanCollide = false end
+            end
+            char.Humanoid.WalkSpeed = 100 -- Speed buat lari dari tsunami
+        end
+    end)
+end)
+
+print("Hamzz Hub & HamzzScript Active! Selamat merampok, Ikyy! 😈☠️")         end
       end
       Rayfield:Notify({Title = "Rampok Berhasil!", Content = "Semua item mereka jadi milik lo! 😈", Duration = 3})
    end,
