@@ -1,63 +1,48 @@
 --[[
-    🏛️ HamzzScript: THE TRILOGY ENGINE (V1.8)
+    🏛️ HamzzScript: THE TRILOGY ENGINE (V2.7)
     THEME: VOLT NITRO SPEED 🏎️⚡
     OWNER: MASTER IKYY ☠️😈
-    UPDATE: BRUTE FORCE SPEED (ANTI-RESET)
+    STATUS: ALL FEATURES MERGED & FIXED (NO HEAL GOD MODE)
 ]]
 
 local lp = game.Players.LocalPlayer
 local runService = game:GetService("RunService")
 local mouse = lp:GetMouse()
+local uis = game:GetService("UserInputService")
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "HamzzScript | Volt Nitro Edition ⚡",
-   LoadingTitle = "IGNITING NITRO...",
-   LoadingSubtitle = "By Ikyy X Rizal",
+   Name = "HamzzScript | V2.7 Final ⚡",
+   LoadingTitle = "RE-AWAKENING IKYY...",
+   LoadingSubtitle = "Shadow Monarch Edition",
    ConfigurationSaving = {Enabled = true, FolderName = "HamzzScriptConfigs", FileName = "IkyyHub"},
-   KeySystem = false
 })
 
--- [[ TAB 1: MAIN MENU ]]
-local Tab1 = Window:CreateTab("Main Menu 🛡️")
-Tab1:CreateSection("Survival & World Hack")
-
-Tab1:CreateButton({
-   Name = "DELETE TSUNAMI (Clean Map) 🌊❌",
-   Callback = function()
-      local count = 0
-      for _, v in pairs(game.Workspace:GetDescendants()) do
-         if v:IsA("BasePart") or v:IsA("MeshPart") then
-            if v.Name:lower():find("tsunami") or v.Name:lower():find("water") or v.Name:lower():find("wave") then
-               v:Destroy()
-               count = count + 1
-            end
-         end
-      end
-      game.Workspace.Terrain:Clear()
-      Rayfield:Notify({Title = "HamzzScript", Content = "Deleted " .. tostring(count) .. " Parts!", Duration = 3})
-   end,
-})
+-- [[ TAB 1: COMBAT & SOLO LEVELING ]]
+local Tab1 = Window:CreateTab("Combat ⚔️")
+Tab1:CreateSection("Destruction & Aura")
 
 Tab1:CreateToggle({
-   Name = "ABSOLUTE GOD MODE (No Touch)",
+   Name = "MAX DAMAGE AURA (Full Map)",
    CurrentValue = false,
-   Flag = "GodMode",
    Callback = function(v)
-      _G.TrueGod = v
+      _G.MaxAura = v
       task.spawn(function()
-         while _G.TrueGod do
-            task.wait()
+         while _G.MaxAura do
+            runService.Heartbeat:Wait()
             pcall(function()
-               local char = lp.Character
-               if char then
-                  local hum = char:FindFirstChildOfClass("Humanoid")
-                  if hum then
-                     hum.Health = hum.MaxHealth
-                     hum:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
-                  end
-                  for _, part in pairs(char:GetChildren()) do
-                     if part:IsA("BasePart") then part.CanTouch = false end
+               for _, enemy in pairs(workspace:GetDescendants()) do
+                  if enemy:IsA("Humanoid") and enemy.Parent ~= lp.Character then
+                     local root = enemy.Parent:FindFirstChild("HumanoidRootPart")
+                     if root and (root.Position - lp.Character.HumanoidRootPart.Position).Magnitude < 1000 then
+                        for i = 1, 10 do
+                           for _, r in pairs(game:GetService("ReplicatedStorage"):GetDescendants()) do
+                              if r:IsA("RemoteEvent") and (r.Name:lower():find("hit") or r.Name:lower():find("attack") or r.Name:lower():find("damage")) then
+                                 r:FireServer(enemy.Parent, math.huge)
+                              end
+                           end
+                        end
+                     end
                   end
                end
             end)
@@ -66,12 +51,118 @@ Tab1:CreateToggle({
    end,
 })
 
--- [[ TAB 3: MISC ]]
-local Tab3 = Window:CreateTab("Misc ⚙️")
-Tab3:CreateSection("Movement (BRUTE FORCE)")
+-- [[ TAB 2: SURVIVAL & WORLD ]]
+local Tab2 = Window:CreateTab("Survival 🛡️")
+Tab2:CreateSection("Absolute Protection")
 
--- SPEED HACK VERSI MAKSA (GAK BAKAL BISA DI-RESET GAME)
+Tab2:CreateToggle({
+   Name = "ABSOLUTE GOD (NO-HEAL)",
+   CurrentValue = false,
+   Callback = function(v)
+      _G.AbsGod = v
+      if v then
+         lp.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
+         _G.GodLoop = runService.Stepped:Connect(function()
+            pcall(function()
+               for _, p in pairs(lp.Character:GetChildren()) do
+                  if p:IsA("BasePart") then p.CanTouch = false end
+               end
+            end)
+         end)
+      else
+         if _G.GodLoop then _G.GodLoop:Disconnect() end
+         lp.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Dead, true)
+      end
+   end,
+})
+
+Tab2:CreateToggle({
+   Name = "INVISIBLE GHOST",
+   CurrentValue = false,
+   Callback = function(v)
+      for _, part in pairs(lp.Character:GetDescendants()) do
+         if part:IsA("BasePart") or part:IsA("Decal") then
+            part.Transparency = v and 1 or 0
+         end
+      end
+   end,
+})
+
+Tab2:CreateButton({
+   Name = "DELETE TSUNAMI (Map Clean) 🌊",
+   Callback = function()
+      for _, v in pairs(workspace:GetDescendants()) do
+         if v:IsA("BasePart") and (v.Name:lower():find("tsunami") or v.Name:lower():find("water")) then
+            v:Destroy()
+         end
+      end
+      workspace.Terrain:Clear()
+   end,
+})
+
+-- [[ TAB 3: UTILITY & MISC ]]
+local Tab3 = Window:CreateTab("Misc ⚙️")
+Tab3:CreateSection("Movement & Optimization")
+
 Tab3:CreateSlider({
+   Name = "Nitro Speed (Maksa)",
+   Range = {16, 1000},
+   Increment = 20,
+   CurrentValue = 16,
+   Callback = function(v)
+      _G.SpdValue = v
+      if _G.SpdLoop then _G.SpdLoop:Disconnect() end
+      _G.SpdLoop = runService.Heartbeat:Connect(function()
+         pcall(function() lp.Character.Humanoid.WalkSpeed = _G.SpdValue end)
+      end)
+   end,
+})
+
+Tab3:CreateToggle({
+   Name = "NOCLIP",
+   CurrentValue = false,
+   Callback = function(v)
+      _G.Noclip = v
+      runService.Stepped:Connect(function()
+         if _G.Noclip then
+            for _, p in pairs(lp.Character:GetDescendants()) do
+               if p:IsA("BasePart") then p.CanCollide = false end
+            end
+         end
+      end)
+   end,
+})
+
+Tab3:CreateButton({
+   Name = "FPS BOOSTER (Anti-Lag)",
+   Callback = function()
+      for _, v in pairs(workspace:GetDescendants()) do
+         if v:IsA("BasePart") and not v.Parent:FindFirstChild("Humanoid") then
+            v.Material = Enum.Material.SmoothPlastic
+         elseif v:IsA("Decal") then v:Destroy() end
+      end
+   end,
+})
+
+Tab3:CreateButton({
+   Name = "REJOIN SERVER",
+   Callback = function() game:GetService("TeleportService"):Teleport(game.PlaceId, lp) end,
+})
+
+-- [[ FLOATING BUTTON ]]
+pcall(function() if game:GetService("CoreGui"):FindFirstChild("HamzzFinalUI") then game:GetService("CoreGui").HamzzFinalUI:Destroy() end end)
+local SG = Instance.new("ScreenGui", game:GetService("CoreGui")) SG.Name = "HamzzFinalUI"
+local TB = Instance.new("TextButton", SG)
+TB.Size = UDim2.new(0, 45, 0, 45) TB.Position = UDim2.new(0, 15, 0.5, 0)
+TB.Text = "H" TB.BackgroundColor3 = Color3.fromRGB(10,10,10) TB.TextColor3 = Color3.fromRGB(200,255,0)
+Instance.new("UIStroke", TB).Color = Color3.fromRGB(200,255,0)
+Instance.new("UICorner", TB).CornerRadius = UDim.new(1, 0)
+TB.MouseButton1Click:Connect(function()
+    local target = game:GetService("CoreGui"):FindFirstChild("RayfieldGui")
+    if target then target.Enabled = not target.Enabled end
+end)
+
+Rayfield:Notify({Title = "HamzzScript", Content = "V2.7 MERGED & FIXED, Ikyy!", Duration = 5})Tab3:CreateSlider({
    Name = "Nitro Speed (Brute Force)",
    Range = {16, 500},
    Increment = 5,
