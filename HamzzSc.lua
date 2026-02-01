@@ -1,17 +1,18 @@
 --[[
-    🏛️ HamzzScript: THE TRILOGY ENGINE (V1.3)
+    🏛️ HamzzScript: THE TRILOGY ENGINE (V1.8)
     THEME: VOLT NITRO SPEED 🏎️⚡
     OWNER: MASTER IKYY ☠️😈
-    UPDATE: NOCLIP & FIX SPEED (ANTI-STUCK)
+    UPDATE: BRUTE FORCE SPEED (ANTI-RESET)
 ]]
 
 local lp = game.Players.LocalPlayer
 local runService = game:GetService("RunService")
+local mouse = lp:GetMouse()
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
    Name = "HamzzScript | Volt Nitro Edition ⚡",
-   LoadingTitle = "IGNITING ENGINE...",
+   LoadingTitle = "IGNITING NITRO...",
    LoadingSubtitle = "By Ikyy X Rizal",
    ConfigurationSaving = {Enabled = true, FolderName = "HamzzScriptConfigs", FileName = "IkyyHub"},
    KeySystem = false
@@ -19,10 +20,27 @@ local Window = Rayfield:CreateWindow({
 
 -- [[ TAB 1: MAIN MENU ]]
 local Tab1 = Window:CreateTab("Main Menu 🛡️")
-Tab1:CreateSection("God Mode & Farming")
+Tab1:CreateSection("Survival & World Hack")
+
+Tab1:CreateButton({
+   Name = "DELETE TSUNAMI (Clean Map) 🌊❌",
+   Callback = function()
+      local count = 0
+      for _, v in pairs(game.Workspace:GetDescendants()) do
+         if v:IsA("BasePart") or v:IsA("MeshPart") then
+            if v.Name:lower():find("tsunami") or v.Name:lower():find("water") or v.Name:lower():find("wave") then
+               v:Destroy()
+               count = count + 1
+            end
+         end
+      end
+      game.Workspace.Terrain:Clear()
+      Rayfield:Notify({Title = "HamzzScript", Content = "Deleted " .. tostring(count) .. " Parts!", Duration = 3})
+   end,
+})
 
 Tab1:CreateToggle({
-   Name = "TRUE GOD MODE (Immortality)",
+   Name = "ABSOLUTE GOD MODE (No Touch)",
    CurrentValue = false,
    Flag = "GodMode",
    Callback = function(v)
@@ -32,12 +50,14 @@ Tab1:CreateToggle({
             task.wait()
             pcall(function()
                local char = lp.Character
-               if char and char:FindFirstChild("Humanoid") then
-                  char.Humanoid.MaxHealth = 9e15
-                  char.Humanoid.Health = 9e15
-                  char.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
-                  if not char:FindFirstChildOfClass("ForceField") then
-                     local ff = Instance.new("ForceField", char) ff.Visible = false
+               if char then
+                  local hum = char:FindFirstChildOfClass("Humanoid")
+                  if hum then
+                     hum.Health = hum.MaxHealth
+                     hum:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
+                  end
+                  for _, part in pairs(char:GetChildren()) do
+                     if part:IsA("BasePart") then part.CanTouch = false end
                   end
                end
             end)
@@ -46,69 +66,63 @@ Tab1:CreateToggle({
    end,
 })
 
-Tab1:CreateToggle({
-   Name = "ULTRA COLLECT (Auto Farm)",
-   CurrentValue = false,
-   Flag = "UltraFarm",
-   Callback = function(v)
-      _G.UltraFarm = v
-      task.spawn(function()
-         while _G.UltraFarm do
-            task.wait(0.3)
-            pcall(function()
-               for i = 1, 30 do
-                  if not _G.UltraFarm then break end
-                  local args = {[1] = "Collect Money", [2] = "{c4466bc3-3d04-4575-afe0-564002c44233}", [3] = tostring(i)}
-                  game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("Net"):WaitForChild("RF/Plot.PlotAction"):InvokeServer(unpack(args))
-               end
-            end)
-         end
-      end)
-   end,
-})
-
--- [[ TAB 2: VISUAL ]]
-local Tab2 = Window:CreateTab("Visual 👁️")
-Tab2:CreateSection("World & ESP")
-
-Tab2:CreateButton({
-   Name = "SIMPLE ESP (Volt Highlight)",
-   Callback = function()
-      for _, v in pairs(game.Players:GetPlayers()) do
-         if v ~= lp and v.Character then
-            local hi = v.Character:FindFirstChild("HamzzESP") or Instance.new("Highlight", v.Character)
-            hi.Name = "HamzzESP"
-            hi.FillColor = Color3.fromRGB(200, 255, 0)
-            hi.FillTransparency = 0.4
-         end
-      end
-   end,
-})
-
 -- [[ TAB 3: MISC ]]
 local Tab3 = Window:CreateTab("Misc ⚙️")
-Tab3:CreateSection("Movement (No Stuck)")
+Tab3:CreateSection("Movement (BRUTE FORCE)")
 
--- FIX SPEED HACK
+-- SPEED HACK VERSI MAKSA (GAK BAKAL BISA DI-RESET GAME)
 Tab3:CreateSlider({
-   Name = "Nitro Speed",
+   Name = "Nitro Speed (Brute Force)",
    Range = {16, 500},
    Increment = 5,
    CurrentValue = 16,
    Callback = function(v)
-      _G.WalkSpeed = v
-      task.spawn(function()
-         while _G.WalkSpeed == v do
-            pcall(function()
-               lp.Character.Humanoid.WalkSpeed = v
-            end)
-            task.wait(0.1)
-         end
+      _G.SpeedValue = v
+      -- Putusin loop lama kalau ada
+      if _G.SpeedConnection then _G.SpeedConnection:Disconnect() end
+      
+      -- Bikin loop baru yang jalan tiap frame (Sangat Kencang)
+      _G.SpeedConnection = runService.RenderStepped:Connect(function()
+         pcall(function()
+            if lp.Character and lp.Character:FindFirstChild("Humanoid") then
+               lp.Character.Humanoid.WalkSpeed = _G.SpeedValue
+            end
+         end)
       end)
    end,
 })
 
--- NOCLIP (TEMBUS TEMBOK)
+Tab3:CreateToggle({
+   Name = "FLY MODE (Immortal Fly)",
+   CurrentValue = false,
+   Flag = "FlyMode",
+   Callback = function(v)
+      _G.Fly = v
+      local char = lp.Character
+      local root = char:FindFirstChild("HumanoidRootPart")
+      if v then
+         local bg = Instance.new("BodyGyro", root)
+         bg.P = 9e4
+         bg.maxTorque = Vector3.new(9e9, 9e9, 9e9)
+         local bv = Instance.new("BodyVelocity", root)
+         bv.maxForce = Vector3.new(9e9, 9e9, 9e9)
+         task.spawn(function()
+            while _G.Fly do
+               task.wait()
+               pcall(function()
+                  char.Humanoid.PlatformStand = true
+                  local dir = (workspace.CurrentCamera.CFrame.lookVector * (mouse.Hit.p - root.Position).unit * 50)
+                  bv.velocity = Vector3.new(dir.X, dir.Y, dir.Z)
+                  bg.cframe = workspace.CurrentCamera.CFrame
+               end)
+            end
+            bg:Destroy() bv:Destroy()
+            char.Humanoid.PlatformStand = false
+         end)
+      end
+   end,
+})
+
 Tab3:CreateToggle({
    Name = "NOCLIP (Wall Pass)",
    CurrentValue = false,
@@ -120,28 +134,19 @@ Tab3:CreateToggle({
             if _G.Noclip then
                pcall(function()
                   for _, part in pairs(lp.Character:GetDescendants()) do
-                     if part:IsA("BasePart") then
-                        part.CanCollide = false
-                     end
+                     if part:IsA("BasePart") then part.CanCollide = false end
                   end
                end)
             else
                _G.NoclipLoop:Disconnect()
             end
          end)
-      else
-         if _G.NoclipLoop then _G.NoclipLoop:Disconnect() end
       end
    end,
 })
 
-Tab3:CreateButton({
-   Name = "Rejoin Server",
-   Callback = function() game:GetService("TeleportService"):Teleport(game.PlaceId, lp) end,
-})
-
 -- [[ FLOATING BUTTON ]]
-pcall(function() game:GetService("CoreGui").HamzzFinalUI:Destroy() end)
+pcall(function() if game:GetService("CoreGui"):FindFirstChild("HamzzFinalUI") then game:GetService("CoreGui").HamzzFinalUI:Destroy() end end)
 local SG = Instance.new("ScreenGui", game:GetService("CoreGui")) SG.Name = "HamzzFinalUI"
 local TB = Instance.new("TextButton", SG)
 TB.Size = UDim2.new(0, 45, 0, 45) TB.Position = UDim2.new(0, 15, 0.5, 0)
@@ -153,4 +158,4 @@ TB.MouseButton1Click:Connect(function()
     if target then target.Enabled = not target.Enabled end
 end)
 
-Rayfield:Notify({Title = "HamzzScript", Content = "V1.3 Ready, Master Ikyy!", Duration = 5})
+Rayfield:Notify({Title = "HamzzScript", Content = "V1.8 Nitro Fixed!", Duration = 5})
