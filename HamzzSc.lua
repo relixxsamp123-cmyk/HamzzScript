@@ -1,77 +1,169 @@
 --[[
-    🏛️ HamzzScript: THE TRILOGY ENGINE (V3.3)
+    🏛️ HamzzScript: THE TRILOGY ENGINE 🏛️
+    TAB 1: MAIN | TAB 2: VISUAL | TAB 3: MISC
     OWNER: MASTER IKYY ☠️😈
-    STATUS: FIXED UI & BLOOD LOCK 100%
+    UPDATE: BLOOD LOCK & DAMAGE AURA & INVISIBLE
 ]]
 
--- ANTI-ERROR START
-pcall(function()
-    local lp = game.Players.LocalPlayer
-    local runService = game:GetService("RunService")
-    
-    -- [[ LOAD LIBRARY - PAKE MIRROR BIAR GAK GAGAL ]]
-    local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local lp = game.Players.LocalPlayer
+local runService = game:GetService("RunService")
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-    -- [[ METATABLE BLOOD LOCK ]]
-    local mt = getrawmetatable(game)
-    local old_newindex = mt.__newindex
-    setreadonly(mt, false)
-    mt.__newindex = newcclosure(function(t, k, v)
-        if _G.AbsoluteImmortal and t:IsA("Humanoid") and k == "Health" then
-            if v < t.MaxHealth then v = t.MaxHealth end
-        end
-        return old_newindex(t, k, v)
-    end)
-    setreadonly(mt, true)
+-- [[ METATABLE HOOK - BIAR DARAH GAK BISA TURUN ]]
+local mt = getrawmetatable(game)
+local old_newindex = mt.__newindex
+setreadonly(mt, false)
+mt.__newindex = newcclosure(function(t, k, v)
+    if getgenv().BloodLock and t:IsA("Humanoid") and k == "Health" then
+        if v < t.MaxHealth then v = t.MaxHealth end
+    end
+    return old_newindex(t, k, v)
+end)
+setreadonly(mt, true)
 
-    local Window = Rayfield:CreateWindow({
-       Name = "HamzzScript | V3.3 Fixed ⚡",
-       LoadingTitle = "BYPASSING ENGINE...",
-       LoadingSubtitle = "By Master Ikyy",
-       ConfigurationSaving = {Enabled = false}
-    })
+local Window = Rayfield:CreateWindow({
+   Name = "HamzzScript | Master Ikyy ☠️",
+   LoadingTitle = "BYPASSING SYSTEM...",
+   LoadingSubtitle = "Script By Ikyy X Rizal",
+})
 
-    -- [[ TAB COMBAT ]]
-    local Tab1 = Window:CreateTab("Combat ⚔️")
-    Tab1:CreateToggle({
-       Name = "DAMAGE AURA (Auto Attack)",
-       CurrentValue = false,
-       Callback = function(v)
-          _G.ActiveAura = v
-          task.spawn(function()
-             while _G.ActiveAura do
-                task.wait(0.2)
-                pcall(function()
-                   for _, obj in pairs(workspace:GetDescendants()) do
-                      if obj:IsA("Humanoid") and obj.Parent ~= lp.Character then
-                         local hrp = obj.Parent:FindFirstChild("HumanoidRootPart")
-                         if hrp and (hrp.Position - lp.Character.HumanoidRootPart.Position).Magnitude < (_G.AuraDist or 50) then
-                            for _, rem in pairs(game:GetService("ReplicatedStorage"):GetDescendants()) do
-                               if rem:IsA("RemoteEvent") and (rem.Name:lower():find("attack") or rem.Name:lower():find("hit")) then
-                                  rem:FireServer(obj.Parent)
-                               end
-                            end
-                         end
-                      end
-                   end
-                end)
-             end
-          end)
-       end,
-    })
+-- [[ TAB 1: MAIN MENU ]]
+local Tab1 = Window:CreateTab("Main Menu 🛡️")
+Tab1:CreateSection("God Mode & Combat")
 
-    Tab1:CreateSlider({
-       Name = "Aura Radius",
-       Range = {10, 300},
-       Increment = 10,
-       CurrentValue = 50,
-       Callback = function(v) _G.AuraDist = v end,
-    })
+Tab1:CreateToggle({
+   Name = "TRUE GOD MODE (Blood Lock)",
+   CurrentValue = false,
+   Callback = function(v)
+      getgenv().BloodLock = v
+      task.spawn(function()
+         while getgenv().BloodLock do
+            task.wait()
+            pcall(function()
+               if lp.Character and lp.Character:FindFirstChild("Humanoid") then
+                  -- Bikin badan gak bisa disentuh script damage
+                  for _, p in pairs(lp.Character:GetChildren()) do
+                     if p:IsA("BasePart") then p.CanTouch = false end
+                  end
+                  lp.Character.Humanoid.Health = 100
+                  lp.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
+               end
+            end)
+         end
+      end)
+   end,
+})
 
-    -- [[ TAB SURVIVAL ]]
-    local Tab2 = Window:CreateTab("Survival 🛡️")
-    Tab2:CreateToggle({
-       Name = "GOD MODE (BLOOD LOCK)",
+Tab1:CreateToggle({
+   Name = "DAMAGE AURA (Auto Attack)",
+   CurrentValue = false,
+   Callback = function(v)
+      getgenv().DamageAura = v
+      task.spawn(function()
+         while getgenv().DamageAura do
+            task.wait(0.2) -- Optimized biar gak lag
+            pcall(function()
+               for _, enemy in pairs(workspace:GetDescendants()) do
+                  if enemy:IsA("Humanoid") and enemy.Parent ~= lp.Character then
+                     local hrp = enemy.Parent:FindFirstChild("HumanoidRootPart")
+                     if hrp and (hrp.Position - lp.Character.HumanoidRootPart.Position).Magnitude < 60 then
+                        -- Cari Remote Attack
+                        for _, r in pairs(game:GetService("ReplicatedStorage"):GetDescendants()) do
+                           if r:IsA("RemoteEvent") and (r.Name:lower():find("attack") or r.Name:lower():find("hit")) then
+                              r:FireServer(enemy.Parent)
+                           end
+                        end
+                     end
+                  end
+               end
+            end)
+         end
+      end)
+   end,
+})
+
+-- [[ TAB 2: VISUAL ]]
+local Tab2 = Window:CreateTab("Visual 👁️")
+Tab2:CreateSection("Invisibility & World")
+
+Tab2:CreateToggle({
+   Name = "TRUE INVISIBLE (Ghost Mode)",
+   CurrentValue = false,
+   Callback = function(v)
+      getgenv().Ghost = v
+      pcall(function()
+         for _, part in pairs(lp.Character:GetDescendants()) do
+            if part:IsA("BasePart") or part:IsA("Decal") then
+               part.Transparency = v and 1 or 0
+            end
+         end
+      end)
+   end,
+})
+
+Tab2:CreateButton({
+   Name = "SIMPLE ESP (Box)",
+   Callback = function()
+      for _, v in pairs(game.Players:GetPlayers()) do
+         if v ~= lp and v.Character and not v.Character:FindFirstChild("Highlight") then
+            local hi = Instance.new("Highlight", v.Character)
+            hi.FillColor = Color3.fromRGB(255, 0, 0)
+         end
+      end
+      Rayfield:Notify({Title = "HamzzScript", Content = "ESP Activated!", Duration = 2})
+   end,
+})
+
+-- [[ TAB 3: MISC ]]
+local Tab3 = Window:CreateTab("Misc ⚙️")
+Tab3:CreateSection("Character Mods")
+
+Tab3:CreateSlider({
+   Name = "Speed Hack",
+   Range = {16, 500},
+   Increment = 10,
+   CurrentValue = 16,
+   Callback = function(v)
+      lp.Character.Humanoid.WalkSpeed = v
+   end,
+})
+
+Tab3:CreateToggle({
+   Name = "NOCLIP (Pass Through)",
+   CurrentValue = false,
+   Callback = function(v)
+      getgenv().Noclip = v
+      runService.Stepped:Connect(function()
+         if getgenv().Noclip and lp.Character then
+            for _, p in pairs(lp.Character:GetDescendants()) do
+               if p:IsA("BasePart") then p.CanCollide = false end
+            end
+         end
+      end)
+   end,
+})
+
+Tab3:CreateButton({
+   Name = "Rejoin Server",
+   Callback = function()
+      game:GetService("TeleportService"):Teleport(game.PlaceId, lp)
+   end,
+})
+
+-- [[ FLOATING BUTTON ]]
+if game:GetService("CoreGui"):FindFirstChild("HamzzFinalUI") then game:GetService("CoreGui").HamzzFinalUI:Destroy() end
+local SG = Instance.new("ScreenGui", game:GetService("CoreGui")) SG.Name = "HamzzFinalUI"
+local TB = Instance.new("TextButton", SG)
+TB.Size = UDim2.new(0, 45, 0, 45) TB.Position = UDim2.new(0, 15, 0.5, 0)
+TB.Text = "H" TB.BackgroundColor3 = Color3.fromRGB(20,20,20) TB.TextColor3 = Color3.fromRGB(0,255,0)
+local TS = Instance.new("UIStroke", TB) TS.Color = Color3.fromRGB(0,255,0) TS.Thickness = 2
+local TC = Instance.new("UICorner", TB) TC.CornerRadius = UDim.new(1, 0)
+TB.MouseButton1Click:Connect(function()
+    local target = game:GetService("CoreGui"):FindFirstChild("RayfieldGui")
+    if target then target.Enabled = not target.Enabled end
+end)
+
+Rayfield:Notify({Title = "HamzzScript", Content = "V3.6 Ready, Master Ikyy!", Duration = 5})       Name = "GOD MODE (BLOOD LOCK)",
        CurrentValue = false,
        Callback = function(v)
           _G.AbsoluteImmortal = v
