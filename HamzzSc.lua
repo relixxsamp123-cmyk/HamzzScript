@@ -1,68 +1,114 @@
--- [[ HAMZZSCRIPT V3.7 - DAMAGE AURA LOADSTRING ]] --
-loadstring(game:HttpGet("https://raw.githubusercontent.com/relixxsamp123-cmyk/HamzzScript/refs/heads/main/update%20premium%20akses.lua?v=" .. tick()))()            pcall(function()
-               for _, enemy in pairs(workspace:GetDescendants()) do
-                  if enemy:IsA("Humanoid") and enemy.Parent ~= lp.Character then
-                     local hrp = enemy.Parent:FindFirstChild("HumanoidRootPart")
-                     if hrp and (hrp.Position - lp.Character.HumanoidRootPart.Position).Magnitude < 60 then
-                        -- Cari Remote Attack
-                        for _, r in pairs(game:GetService("ReplicatedStorage"):GetDescendants()) do
-                           if r:IsA("RemoteEvent") and (r.Name:lower():find("attack") or r.Name:lower():find("hit")) then
-                              r:FireServer(enemy.Parent)
-                           end
-                        end
-                     end
-                  end
-               end
+--[[
+    🏛️ HamzzScript: THE TRILOGY ENGINE (V3.9)
+    OWNER: MASTER IKYY ☠️😈
+    FITUR: MAGNET COIN & DAMAGE AURA (SIMPLE EDITION)
+]]
+
+local lp = game.Players.LocalPlayer
+local runService = game:GetService("RunService")
+
+-- [[ SETUP UI SIMPEL - ANTI GAGAL ]]
+local ScreenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
+local MainFrame = Instance.new("Frame", ScreenGui)
+local Title = Instance.new("TextLabel", MainFrame)
+local UIList = Instance.new("UIListLayout", MainFrame)
+
+MainFrame.Size = UDim2.new(0, 220, 0, 250)
+MainFrame.Position = UDim2.new(0.5, -110, 0.5, -125)
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+MainFrame.BorderSizePixel = 2
+MainFrame.Active = true
+MainFrame.Draggable = true
+
+Title.Size = UDim2.new(1, 0, 0, 35)
+Title.Text = "HAMZZSCRIPT V3.9"
+Title.TextColor3 = Color3.fromRGB(0, 255, 0)
+Title.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+
+UIList.Padding = UDim.new(0, 5)
+UIList.HorizontalAlignment = Enum.HorizontalAlignment.Center
+
+-- [[ FUNCTION BUTTON ]]
+local function CreateToggle(txt, callback)
+    local btn = Instance.new("TextButton", MainFrame)
+    btn.Size = UDim2.new(0.9, 0, 0, 40)
+    btn.Text = txt .. " [OFF]"
+    btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    btn.TextColor3 = Color3.white
+    
+    local active = false
+    btn.MouseButton1Click:Connect(function()
+        active = not active
+        btn.Text = txt .. (active and " [ON]" or " [OFF]")
+        btn.BackgroundColor3 = active and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(45, 45, 45)
+        callback(active)
+    end)
+end
+
+-- [[ FITUR 1: MAGNET COIN ]]
+CreateToggle("MAGNET COIN", function(v)
+    _G.Magnet = v
+    task.spawn(function()
+        while _G.Magnet do
+            task.wait(0.1)
+            pcall(function()
+                for _, item in pairs(workspace:GetDescendants()) do
+                    -- Nyari objek yang namanya mengandung 'Coin', 'Gem', atau 'Money'
+                    if item:IsA("BasePart") and (item.Name:find("Coin") or item.Name:find("Gem") or item.Name:find("Money") or item.Name:find("Drop")) then
+                        item.CFrame = lp.Character.HumanoidRootPart.CFrame
+                    end
+                end
             end)
-         end
-      end)
-   end,
-})
+        end
+    end)
+end)
 
--- [[ TAB 2: VISUAL ]]
-local Tab2 = Window:CreateTab("Visual 👁️")
-Tab2:CreateSection("Invisibility & World")
+-- [[ FITUR 2: DAMAGE AURA ]]
+CreateToggle("DAMAGE AURA", function(v)
+    _G.Aura = v
+    task.spawn(function()
+        while _G.Aura do
+            task.wait(0.3)
+            pcall(function()
+                for _, enemy in pairs(workspace:GetDescendants()) do
+                    if enemy:IsA("Humanoid") and enemy.Parent ~= lp.Character then
+                        local hrp = enemy.Parent:FindFirstChild("HumanoidRootPart")
+                        if hrp and (hrp.Position - lp.Character.HumanoidRootPart.Position).Magnitude < 50 then
+                            -- Spam Remote Attack
+                            for _, rem in pairs(game:GetService("ReplicatedStorage"):GetDescendants()) do
+                                if rem:IsA("RemoteEvent") and (rem.Name:lower():find("attack") or rem.Name:lower():find("hit")) then
+                                    rem:FireServer(enemy.Parent)
+                                end
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+    end)
+end)
 
-Tab2:CreateToggle({
-   Name = "TRUE INVISIBLE (Ghost Mode)",
-   CurrentValue = false,
-   Callback = function(v)
-      getgenv().Ghost = v
-      pcall(function()
-         for _, part in pairs(lp.Character:GetDescendants()) do
-            if part:IsA("BasePart") or part:IsA("Decal") then
-               part.Transparency = v and 1 or 0
-            end
-         end
-      end)
-   end,
-})
+-- [[ FITUR 3: SPEED ]]
+CreateToggle("SPEED NITRO", function(v)
+    _G.Speed = v
+    runService.Heartbeat:Connect(function()
+        if _G.Speed and lp.Character then
+            lp.Character.Humanoid.WalkSpeed = 100
+        else
+            lp.Character.Humanoid.WalkSpeed = 16
+        end
+    end)
+end)
 
-Tab2:CreateButton({
-   Name = "SIMPLE ESP (Box)",
-   Callback = function()
-      for _, v in pairs(game.Players:GetPlayers()) do
-         if v ~= lp and v.Character and not v.Character:FindFirstChild("Highlight") then
-            local hi = Instance.new("Highlight", v.Character)
-            hi.FillColor = Color3.fromRGB(255, 0, 0)
-         end
-      end
-      Rayfield:Notify({Title = "HamzzScript", Content = "ESP Activated!", Duration = 2})
-   end,
-})
+-- [[ CLOSE BUTTON ]]
+local Close = Instance.new("TextButton", MainFrame)
+Close.Size = UDim2.new(0.9, 0, 0, 30)
+Close.Text = "TUTUP MENU"
+Close.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+Close.TextColor3 = Color3.white
+Close.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
 
--- [[ TAB 3: MISC ]]
-local Tab3 = Window:CreateTab("Misc ⚙️")
-Tab3:CreateSection("Character Mods")
-
-Tab3:CreateSlider({
-   Name = "Speed Hack",
-   Range = {16, 500},
-   Increment = 10,
-   CurrentValue = 16,
-   Callback = function(v)
-      lp.Character.Humanoid.WalkSpeed = v
-   end,
+print("HamzzScript V3.9 Loaded!")   end,
 })
 
 Tab3:CreateToggle({
