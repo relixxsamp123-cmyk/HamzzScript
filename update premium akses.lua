@@ -1,295 +1,160 @@
--- [[ Hamzz Hub Script FIXED ]] --
--- [[ Khusus Buat Ikyy Sang Penguasa ]] --
+--[[
+    🏛️ HamzzScript: THE TRILOGY ENGINE 🏛️
+    TAB 1: MAIN | TAB 2: VISUAL | TAB 3: MISC
+    OWNER: MASTER IKYY ☠️😈
+    UPDATE: ADDED DAMAGE AURA
+]]
 
--- Load UI Library Pertama (WAJIB BIAR MENU MUNCUL)
+local lp = game.Players.LocalPlayer
+local runService = game:GetService("RunService")
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--- Load Script Premium Lo di Background
-spawn(function()
-    pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/relixxsamp123-cmyk/HamzzScript/refs/heads/main/update%20premium%20akses.lua"))()
-    end)
-end)
-
 local Window = Rayfield:CreateWindow({
-   Name = "Hamzz Hub Script | Premium Access",
-   LoadingTitle = "Fixing Menu for Ikyy...",
-   LoadingSubtitle = "by Hamzz Mods",
-   ConfigurationSaving = { Enabled = false },
-   KeySystem = false
+   Name = "HamzzScript | Master Ikyy 🌌",
+   LoadingTitle = "BUILDING INTERFACE...",
+   LoadingSubtitle = "Script By Ikyy X Rizal",
 })
 
--- [[ BALIKIN SEMUA TAB YANG ILANG ]] --
-local MainTab = Window:CreateTab("Combat ⚔️", 4483362458)
-local MoveTab = Window:CreateTab("Movement 🚀", 4483362458)
-local MiscTab = Window:CreateTab("Misc ⚙️", 4483362458)
+-- [[ TAB 1: MAIN MENU ]]
+local Tab1 = Window:CreateTab("Main Menu 🛡️")
+Tab1:CreateSection("God Mode & Combat")
 
-MainTab:CreateToggle({
-   Name = "God Mode (Kebal Total)",
+Tab1:CreateToggle({
+   Name = "TRUE GOD MODE (Anti-Damage)",
    CurrentValue = false,
-   Callback = function(Value)
-      _G.God = Value
-      while _G.God do
-         pcall(function()
-            game.Players.LocalPlayer.Character.Humanoid.Health = 100000
-            for _, v in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
-               if v:IsA("BasePart") then v.CanTouch = false end
-            end
-         end)
-         task.wait(0.01)
-      end
-   end,
-})
-
-MoveTab:CreateButton({
-   Name = "Click TP (CTRL + Click)",
-   Callback = function()
-      local mouse = game.Players.LocalPlayer:GetMouse()
-      mouse.Button1Down:Connect(function()
-         if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.LeftControl) then
-            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(mouse.Hit.p + Vector3.new(0, 3, 0))
+   Callback = function(v)
+      getgenv().TrueGod = v
+      task.spawn(function()
+         while getgenv().TrueGod do
+            task.wait()
+            pcall(function()
+               if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+                  lp.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0.1, 0)
+                  if lp.Character:FindFirstChild("Humanoid") then
+                      lp.Character.Humanoid.Health = 100
+                      lp.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
+                  end
+               end
+            end)
          end
       end)
    end,
 })
 
-MiscTab:CreateInput({
-   Name = "Copy Avatar",
-   PlaceholderText = "Username",
-   Callback = function(Text)
-      local target = game.Players:FindFirstChild(Text)
-      if target then
-         local desc = game.Players:GetHumanoidDescriptionFromUserId(target.UserId)
-         game.Players.LocalPlayer.Character.Humanoid:ApplyDescription(desc)
-      end
-   end,
-})
-
-Rayfield:Notify({Title = "FIXED!", Content = "Menu udah muncul, siap bantai jembot! 😍☠️", Duration = 5})      _G.DmgAura = Value
+-- FITUR BARU: DAMAGE AURA
+Tab1:CreateToggle({
+   Name = "DAMAGE AURA (Auto Kill)",
+   CurrentValue = false,
+   Callback = function(v)
+      getgenv().DamageAura = v
       task.spawn(function()
-         while _G.DmgAura do
+         while getgenv().DamageAura do
+            task.wait(0.2) -- Optimized biar HP gak stuck
             pcall(function()
-               for _, v in pairs(workspace:GetChildren()) do
-                  if v:FindFirstChild("Humanoid") and v.Name ~= game.Players.LocalPlayer.Name then
-                     if (v.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude < 25 then
-                        -- Insert Remote Attack Here
+               for _, enemy in pairs(workspace:GetDescendants()) do
+                  if enemy:IsA("Humanoid") and enemy.Parent ~= lp.Character then
+                     local hrp = enemy.Parent:FindFirstChild("HumanoidRootPart")
+                     if hrp and (hrp.Position - lp.Character.HumanoidRootPart.Position).Magnitude < 60 then
+                        -- Remote Sniper: Cari Remote Attack di game
+                        for _, r in pairs(game:GetService("ReplicatedStorage"):GetDescendants()) do
+                           if r:IsA("RemoteEvent") and (r.Name:lower():find("attack") or r.Name:lower():find("hit")) then
+                              r:FireServer(enemy.Parent)
+                           end
+                        end
                      end
                   end
                end
             end)
-            task.wait(0.3)
          end
       end)
    end,
 })
 
--- [[ MOVEMENT FEATURES ]] --
-MovementTab:CreateSlider({
-   Name = "WalkSpeed",
-   Range = {16, 500},
-   Increment = 1,
-   CurrentValue = 16,
-   Callback = function(Value)
-      game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
-   end,
-})
-
-MovementTab:CreateToggle({
-   Name = "Noclip (Tembus Tembok)",
-   CurrentValue = false,
-   Flag = "Noclip",
-   Callback = function(Value)
-      _G.Noclip = Value
-      game:GetService("RunService").Stepped:Connect(function()
-         if _G.Noclip and game.Players.LocalPlayer.Character then
-            for _, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
-               if v:IsA("BasePart") then v.CanCollide = false end
-            end
-         end
-      end)
-   end,
-})
-
-MovementTab:CreateToggle({
-   Name = "Fly (Press Q)",
-   CurrentValue = false,
-   Flag = "FlyKey",
-   Callback = function(Value)
-      _G.FlyActive = Value
-      -- Logic Fly Q udah otomatis aktif di background
-   end,
-})
-
-MovementTab:CreateButton({
-   Name = "Activate Click TP (CTRL + Click)",
+Tab1:CreateButton({
+   Name = "ULTRA COLLECT (All Spots)",
    Callback = function()
-      local mouse = game.Players.LocalPlayer:GetMouse()
-      mouse.Button1Down:Connect(function()
-         if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.LeftControl) then
-            if mouse.Target then
-               game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(mouse.Hit.p + Vector3.new(0, 3, 0))
-            end
+      task.spawn(function()
+         for i = 1, 20 do
+            local args = {
+               [1] = "Collect Money",
+               [2] = "{c4466bc3-3d04-4575-afe0-564002c44233}",
+               [3] = tostring(i)
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("Net"):WaitForChild("RF/Plot.PlotAction"):InvokeServer(unpack(args))
          end
       end)
-      Rayfield:Notify({Title = "TP Ready", Content = "CTRL + Click buat Teleport! 😍", Duration = 3})
    end,
 })
 
--- [[ VISUAL & MISC ]] --
-VisualTab:CreateButton({
-   Name = "ESP Player/Monster",
+-- [[ TAB 2: VISUAL ]]
+local Tab2 = Window:CreateTab("Visual 👁️")
+Tab2:CreateSection("World & Player ESP")
+
+Tab2:CreateButton({
+   Name = "SIMPLE ESP (Box)",
    Callback = function()
-      -- ESP logic sederhana
+      for _, v in pairs(game.Players:GetPlayers()) do
+         if v ~= lp and v.Character and not v.Character:FindFirstChild("Highlight") then
+            local hi = Instance.new("Highlight", v.Character)
+            hi.FillColor = Color3.fromRGB(255, 0, 0)
+            hi.OutlineColor = Color3.fromRGB(255, 255, 255)
+         end
+      end
+      Rayfield:Notify({Title = "HamzzScript", Content = "ESP Activated!", Duration = 2})
    end,
 })
 
-MiscTab:CreateInput({
-   Name = "Copy Avatar (Username)",
-   PlaceholderText = "Target Name",
-   Callback = function(Text)
-      local target = game.Players:FindFirstChild(Text)
-      if target then
-         local desc = game.Players:GetHumanoidDescriptionFromUserId(target.UserId)
-         game.Players.LocalPlayer.Character.Humanoid:ApplyDescription(desc)
-         Rayfield:Notify({Title = "Avatar Copied!", Content = "Lo jadi si " .. Text .. " 😈", Duration = 3})
+Tab2:CreateToggle({
+   Name = "FULL BRIGHT (No Shadows)",
+   CurrentValue = false,
+   Callback = function(v)
+      if v then
+         game:GetService("Lighting").Brightness = 2
+         game:GetService("Lighting").GlobalShadows = false
+         game:GetService("Lighting").Ambient = Color3.fromRGB(255, 255, 255)
+      else
+         game:GetService("Lighting").Brightness = 1
+         game:GetService("Lighting").GlobalShadows = true
+         game:GetService("Lighting").Ambient = Color3.fromRGB(127, 127, 127)
       end
    end,
 })
 
-MiscTab:CreateButton({
-   Name = "Unlock VIP Features",
-   Callback = function()
-      Rayfield:Notify({Title = "Success", Content = "VIP Unlocked by Hamzz Hub! 😋", Duration = 3})
+-- [[ TAB 3: MISC ]]
+local Tab3 = Window:CreateTab("Misc ⚙️")
+Tab3:CreateSection("Character Mods")
+
+Tab3:CreateSlider({
+   Name = "Speed Hack",
+   Range = {16, 300},
+   Increment = 1,
+   CurrentValue = 16,
+   Callback = function(v)
+      lp.Character.Humanoid.WalkSpeed = v
    end,
 })
 
-Rayfield:Notify({Title = "Hamzz Hub Full Ready", Content = "Semua fitur udah lengkap, Tuan Ikyy! ☠️", Duration = 5})
--- Features state
-local Features = {
-    godMode = false,
-    noclip = false,
-    fly = false,
-    esp = false,
-    aimbot = false,
-    autoFarm = false,
-    walkSpeed = 50,
-    autoClick = false,
-    antiAfk = true,
-    rainbow = false,
-    xray = false
-}
+Tab3:CreateButton({
+   Name = "Rejoin Server",
+   Callback = function()
+      game:GetService("TeleportService"):Teleport(game.PlaceId, lp)
+   end,
+})
 
--- ============================================
--- 1. GOD MODE
--- ============================================
-local godBtn = createFeatureButton("🛡️ God Mode: OFF", Color3.fromRGB(180, 0, 0))
-godBtn.MouseButton1Click:Connect(function()
-    Features.godMode = not Features.godMode
-    if Features.godMode then
-        pcall(function()
-            Humanoid.MaxHealth = math.huge
-            Humanoid.Health = math.huge
-        end)
-        godBtn.Text = "   🛡️ God Mode: ON"
-        godBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
-    else
-        godBtn.Text = "   🛡️ God Mode: OFF"
-        godBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
-    end
+-- [[ FLOATING BUTTON ]]
+if game:GetService("CoreGui"):FindFirstChild("HamzzFinalUI") then game:GetService("CoreGui").HamzzFinalUI:Destroy() end
+local SG = Instance.new("ScreenGui", game:GetService("CoreGui")) SG.Name = "HamzzFinalUI"
+local TB = Instance.new("TextButton", SG)
+TB.Size = UDim2.new(0, 45, 0, 45) TB.Position = UDim2.new(0, 15, 0.5, 0)
+TB.Text = "H" TB.BackgroundColor3 = Color3.fromRGB(20,20,20) TB.TextColor3 = Color3.fromRGB(0,255,0)
+local TS = Instance.new("UIStroke", TB) TS.Color = Color3.fromRGB(0,255,0) TS.Thickness = 2
+local TC = Instance.new("UICorner", TB) TC.CornerRadius = UDim.new(1, 0)
+TB.MouseButton1Click:Connect(function()
+    local target = game:GetService("CoreGui"):FindFirstChild("RayfieldGui")
+    if target then target.Enabled = not target.Enabled end
 end)
 
--- ============================================
--- 2. NO CLIP
--- ============================================
-local noclipBtn = createFeatureButton("🚷 No Clip: OFF", Color3.fromRGB(180, 100, 0))
-noclipBtn.MouseButton1Click:Connect(function()
-    Features.noclip = not Features.noclip
-    if Features.noclip then
-        noclipBtn.Text = "   🚷 No Clip: ON"
-        noclipBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 150)
-        
-        -- Noclip loop
-        game:GetService("RunService").Stepped:Connect(function()
-            if Features.noclip and Character then
-                for _, v in pairs(Character:GetChildren()) do
-                    if v:IsA("BasePart") then
-                        v.CanCollide = false
-                    end
-                end
-            end
-        end)
-    else
-        noclipBtn.Text = "   🚷 No Clip: OFF"
-        noclipBtn.BackgroundColor3 = Color3.fromRGB(180, 100, 0)
-    end
-end)
-
--- ============================================
--- 3. FLY MODE
--- ============================================
-local flyBtn = createFeatureButton("🦅 Fly Mode: OFF", Color3.fromRGB(0, 100, 180))
-flyBtn.MouseButton1Click:Connect(function()
-    Features.fly = not Features.fly
-    if Features.fly then
-        flyBtn.Text = "   🦅 Fly Mode: ON"
-        flyBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 150)
-        
-        local bodyVel = Instance.new("BodyVelocity")
-        bodyVel.Velocity = Vector3.new(0, 0, 0)
-        bodyVel.MaxForce = Vector3.new(4000, 4000, 4000)
-        bodyVel.Parent = RootPart
-        
-        local UIS = game:GetService("UserInputService")
-        
-        UIS.InputBegan:Connect(function(input)
-            if Features.fly then
-                if input.KeyCode == Enum.KeyCode.Space then
-                    bodyVel.Velocity = Vector3.new(0, 100, 0)
-                elseif input.KeyCode == Enum.KeyCode.LeftControl then
-                    bodyVel.Velocity = Vector3.new(0, -100, 0)
-                end
-            end
-        end)
-        
-        UIS.InputEnded:Connect(function(input)
-            if Features.fly then
-                if input.KeyCode == Enum.KeyCode.Space or input.KeyCode == Enum.KeyCode.LeftControl then
-                    bodyVel.Velocity = Vector3.new(0, 0, 0)
-                end
-            end
-        end)
-    else
-        flyBtn.Text = "   🦅 Fly Mode: OFF"
-        flyBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 180)
-        if RootPart:FindFirstChild("BodyVelocity") then
-            RootPart.BodyVelocity:Destroy()
-        end
-    end
-end)
-
--- ============================================
--- 4. ESP / WALLHACK
--- ============================================
-local espBtn = createFeatureButton("👁️ ESP: OFF", Color3.fromRGB(180, 0, 180))
-espBtn.MouseButton1Click:Connect(function()
-    Features.esp = not Features.esp
-    if Features.esp then
-        espBtn.Text = "   👁️ ESP: ON"
-        espBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 150)
-        
-        -- ESP loop
-        spawn(function()
-            while Features.esp do
-                wait(1)
-                pcall(function()
-                    for _, target in pairs(game:GetService("Players"):GetPlayers()) do
-                        if target ~= Player and target.Character then
-                            local char = target.Character
-                            local highlight = char:FindFirstChild("HamzzESP") or Instance.new("Highlight")
-                            highlight.Name = "HamzzESP"
-                            highlight.FillColor = Color3.fromRGB(255, 50, 50)
-                            highlight.OutlineColor = Color3.fromRGB(255, 255, 50)
-                            highlight.FillTransparency = 0.6
+Rayfield:Notify({Title = "HamzzScript", Content = "V3.7 Damage Aura Ready!", Duration = 5})rency = 0.6
                             highlight.Parent = char
                         end
                     end
